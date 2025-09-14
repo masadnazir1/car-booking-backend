@@ -21,6 +21,7 @@ lib-cov/
 coverage/
 
 # TypeScript compiled output
+/dist
 dist/
 build/
 
