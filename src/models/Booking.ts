@@ -10,8 +10,8 @@ export type BookingType = {
   totalPrice: number;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   paymentStatus: "unpaid" | "paid" | "refunded";
-  pickupLocation: { type: "Point"; coordinates: [number, number] };
-  dropoffLocation: { type: "Point"; coordinates: [number, number] };
+  pickupLocation: string;
+  dropoffLocation: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -37,21 +37,10 @@ const BookingSchema = new Schema<IBooking>(
       enum: ["unpaid", "paid", "refunded"],
       default: "unpaid",
     },
-    pickupLocation: {
-      type: { type: String, default: "Point" },
-      coordinates: [Number],
-    },
-    dropoffLocation: {
-      type: { type: String, default: "Point" },
-      coordinates: [Number],
-    },
+    pickupLocation: { type: String, required: true },
+    dropoffLocation: { type: String, required: true },
   },
   { timestamps: true }
 );
-
-BookingSchema.index({
-  pickupLocation: "2dsphere",
-  dropoffLocation: "2dsphere",
-});
 
 export default mongoose.model<IBooking>("Booking", BookingSchema);

@@ -1,10 +1,10 @@
-// src/models/Car.ts
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export type CarType = {
   dealerId: Types.ObjectId;
+  brandId: Types.ObjectId; // Reference to Brand
+  categoryId: Types.ObjectId; // Reference to Category
   name: string;
-  category: string;
   description: string;
   images: string[];
   badge?: string;
@@ -13,8 +13,12 @@ export type CarType = {
   transmission: string;
   fuel: string;
   dailyRate: number;
+
   status: "available" | "unavailable" | "maintenance";
-  location: { type: "Point"; coordinates: [number, number] };
+  location: string;
+  ac: boolean; //Air Conditioning
+  year: number; //Manufacturing year
+  mileage: number; //Car mileage in KM
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -25,7 +29,11 @@ const CarSchema = new Schema<ICar>(
   {
     dealerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     name: { type: String, required: true },
-    category: { type: String, required: true },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     description: { type: String },
     images: [{ type: String }],
     badge: String,
@@ -33,20 +41,22 @@ const CarSchema = new Schema<ICar>(
     doors: Number,
     transmission: String,
     fuel: String,
-    dailyRate: Number,
+    dailyRate: Number, // used for minPrice / maxPrice filter
+    brandId: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
+
     status: {
       type: String,
       enum: ["available", "unavailable", "maintenance"],
       default: "available",
     },
-    location: {
-      type: { type: String, default: "Point" },
-      coordinates: [Number],
-    },
+    location: { type: String, required: true },
+
+    //fields for filters
+    ac: { type: Boolean, default: true }, // Air Conditioning
+    year: { type: Number, required: true }, // Car manufacturing year
+    mileage: { type: Number, default: 0 }, // Total mileage in KM
   },
   { timestamps: true }
 );
-
-CarSchema.index({ location: "2dsphere" });
 
 export default mongoose.model<ICar>("Car", CarSchema);

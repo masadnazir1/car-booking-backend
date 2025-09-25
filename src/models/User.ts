@@ -1,4 +1,3 @@
-// src/models/User.ts
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export type SocialLoginType = {
@@ -23,6 +22,8 @@ export type UserType = {
   passwordHash?: string;
   socialLogin?: SocialLoginType;
   profileImage?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpire?: number;
   address?: AddressType;
   status: "active" | "suspended" | "deleted";
   createdAt?: Date;
