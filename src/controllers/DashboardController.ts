@@ -3,7 +3,7 @@ import Booking from "../models/Booking.js";
 import mongoose from "mongoose";
 
 /**
- * DashboardController
+ * Dashboard-Controller
  * -------------------
  * Handles renter dashboard related aggregations such as spending over time.
  * This controller calculates:
