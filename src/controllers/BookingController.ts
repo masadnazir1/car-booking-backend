@@ -138,10 +138,14 @@ export default class BookingController {
   // Get upcoming bookings for a user
   public getUpcomingBookings = async (req: Request, res: Response) => {
     const { userId } = req.query;
+
     try {
+      console.log("userId", userId);
       if (!userId) return res.status(400).json({ error: "userId is required" });
 
       const today = new Date();
+      today.setUTCHours(0, 0, 0, 0); // start of today in UTC
+      console.log("today", today);
       const bookings = await Booking.find({
         renterId: userId,
         startDate: { $gte: today },

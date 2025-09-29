@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "main": "src/app.ts",
-  "scripts": {
-    "start": "node --loader ts-node/esm src/app.ts",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'node --loader ts-node/esm' src/app.ts",
-    "build": "tsc",
-    "lint": "eslint . --ext .ts"
-  },
+"scripts": {
+  "start": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/app.ts",
+  "dev": "nodemon --watch 'src/**/*.ts' --exec 'node --import \"data:text/javascript,import { register } from \\\"node:module\\\"; import { pathToFileURL } from \\\"node:url\\\"; register(\\\"ts-node/esm\\\", pathToFileURL(\\\"./\\\"));\"' src/app.ts",
+  "build": "tsc",
+  "lint": "eslint . --ext .ts"
+}
+,
   "dependencies": {
     "bcrypt": "^6.0.0",
     "crypto": "^1.0.1",

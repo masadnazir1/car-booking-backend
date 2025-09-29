@@ -134,7 +134,9 @@ export default class DashboardController {
           {
             label: "Spending (PKR)",
             data,
-            backgroundColor: "#10b981",
+            backgroundColor: "rgba(16, 183, 248, 1)",
+            borderRadius: 50, // round bars
+            barThickness: 20,
           },
         ],
       });
