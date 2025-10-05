@@ -88,6 +88,8 @@ export default class CarController {
         Car.countDocuments(filter),
       ]);
 
+      // const myCars = await cars.find();
+
       return res.status(200).json({
         success: true,
         message: "Cars fetched successfully",
