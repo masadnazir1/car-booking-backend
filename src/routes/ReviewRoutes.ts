@@ -1,20 +1,12 @@
-// src/routes/review.routes.ts
-import { Router } from "express";
+import express from "express";
 import ReviewController from "../controllers/ReviewController.js";
 
-const router = Router();
-const Review = new ReviewController();
+const router = express.Router();
+const reviewController = new ReviewController();
 
-//Create a review
-router.post("/create", Review.createReview);
-
-//Get reviews for a car
-router.get("/car/:carId", Review.getReviewsForCar);
-
-//Get reviews by user
-router.get("/user/:userId", Review.getUserReviews);
-
-//Delete review
-router.delete("/delete", Review.deleteReview);
+router.post("/", reviewController.createReview);
+router.get("/car/:carId", reviewController.getCarReviews);
+router.get("/dealer/:dealerId", reviewController.getDealerReviews);
+router.delete("/:id", reviewController.deleteReview);
 
 export default router;

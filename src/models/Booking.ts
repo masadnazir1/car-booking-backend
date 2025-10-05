@@ -8,6 +8,9 @@ export type BookingType = {
   endDate: Date;
   days: number;
   totalPrice: number;
+  discount: number;
+  finalAmount: number;
+  couponId: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   paymentStatus: "unpaid" | "paid" | "refunded";
   pickupLocation: string;
@@ -27,6 +30,9 @@ const BookingSchema = new Schema<IBooking>(
     endDate: Date,
     days: Number,
     totalPrice: Number,
+    discount: Number,
+    finalAmount: Number,
+    couponId: { type: String, default: "" },
     status: {
       type: String,
       enum: ["pending", "confirmed", "cancelled", "completed"],

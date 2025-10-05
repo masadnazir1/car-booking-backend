@@ -1,34 +1,73 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import Review from "../models/Review.js";
 import Booking from "../models/Booking.js";
 
+/**
+ * Controller responsible for managing user reviews on cars/dealers.
+ * Handles creation, fetching, and average rating calculations.
+ */
 export default class ReviewController {
   constructor() {}
 
-  //Create a review
+  /**
+   * @route POST /api/reviews
+   * @desc Submit a review for a completed booking
+   * @access User (renter)
+   */
   public createReview = async (req: Request, res: Response) => {
+    const { bookingId, raterId, dealerId, carId, rating, comment } = req.body;
+
     try {
-      const { bookingId, raterId, dealerId, carId, rating, comment } = req.body;
-
+      // Validate required fields
       if (!bookingId || !raterId || !dealerId || !carId || !rating) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      //Verify booking exists
-      const booking = await Booking.findById(bookingId);
-      if (!booking) {
-        return res.status(404).json({ message: "Booking not found" });
-      }
-
-      //Prevent duplicate reviews for the same booking
-      const existingReview = await Review.findOne({ bookingId, raterId });
-      if (existingReview) {
         return res
           .status(400)
-          .json({ message: "You already reviewed this booking" });
+          .json({ success: false, message: "Missing required fields." });
       }
 
-      const review = await Review.create({
+      // Validate rating range
+      if (rating < 1 || rating > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "Rating must be between 1 and 5.",
+        });
+      }
+
+      // Validate booking ownership
+      const booking = await Booking.findById(bookingId);
+      if (!booking) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Booking not found." });
+      }
+
+      if (booking.renterId.toString() !== raterId) {
+        return res.status(403).json({
+          success: false,
+          message: "You are not authorized to review this booking.",
+        });
+      }
+
+      // Ensure the booking is completed
+      if (booking.status !== "completed") {
+        return res.status(400).json({
+          success: false,
+          message: "You can only review completed bookings.",
+        });
+      }
+
+      // Prevent duplicate reviews for same booking
+      const existingReview = await Review.findOne({ bookingId, raterId });
+      if (existingReview) {
+        return res.status(400).json({
+          success: false,
+          message: "You have already reviewed this booking.",
+        });
+      }
+
+      // Create the review
+      const newReview = await Review.create({
         bookingId,
         raterId,
         dealerId,
@@ -38,81 +77,137 @@ export default class ReviewController {
       });
 
       return res.status(201).json({
-        message: "Review created successfully",
-        review,
+        success: true,
+        message: "Review submitted successfully.",
+        data: newReview,
       });
-    } catch (error: any) {
-      console.error("Review creation error:", error);
-      return res.status(500).json({ message: "Failed to create review" });
+    } catch (error) {
+      console.error("Create Review Error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error creating review.",
+      });
     }
   };
 
-  //Get reviews for a specific car
-  public getReviewsForCar = async (req: Request, res: Response) => {
-    try {
-      const { carId } = req.params;
+  /**
+   * @route GET /api/reviews/car/:carId
+   * @desc Get all reviews for a specific car
+   * @access Public
+   */
+  public getCarReviews = async (req: Request, res: Response) => {
+    const { carId } = req.params;
 
-      if (!carId) {
-        return res.status(400).json({ message: "carId is required" });
+    try {
+      if (!mongoose.Types.ObjectId.isValid(carId)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid car ID." });
       }
 
       const reviews = await Review.find({ carId })
         .populate("raterId", "name email")
-        .populate("bookingId", "_id startDate endDate");
+        .sort({ createdAt: -1 });
 
-      return res.status(200).json({ reviews });
-    } catch (error: any) {
-      console.error("Error fetching reviews:", error);
-      return res.status(500).json({ message: "Failed to fetch reviews" });
+      const avgRating = await Review.aggregate([
+        { $match: { carId: new mongoose.Types.ObjectId(carId) } },
+        { $group: { _id: "$carId", avgRating: { $avg: "$rating" } } },
+      ]);
+
+      return res.json({
+        success: true,
+        count: reviews.length,
+        averageRating: avgRating[0]?.avgRating || 0,
+        reviews,
+      });
+    } catch (error) {
+      console.error("Get Car Reviews Error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Server error fetching reviews." });
     }
   };
 
-  //Get reviews by a user
-  public getUserReviews = async (req: Request, res: Response) => {
+  /**
+   * @route GET /api/reviews/dealer/:dealerId
+   * @desc Get all reviews for a specific dealer
+   * @access Public / Admin
+   */
+  public getDealerReviews = async (req: Request, res: Response) => {
+    const { dealerId } = req.params;
+
     try {
-      const { userId } = req.params;
-
-      if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
-      }
-
-      const reviews = await Review.find({ raterId: userId })
-        .populate("carId", "name category dailyRate")
-        .populate("dealerId", "name email");
-
-      return res.status(200).json({ reviews });
-    } catch (error: any) {
-      console.error("Error fetching user reviews:", error);
-      return res.status(500).json({ message: "Failed to fetch user reviews" });
-    }
-  };
-
-  //Delete a review (only by the user who wrote it)
-  public deleteReview = async (req: Request, res: Response) => {
-    try {
-      const { reviewId, userId } = req.body;
-
-      if (!reviewId || !userId) {
+      if (!mongoose.Types.ObjectId.isValid(dealerId)) {
         return res
           .status(400)
-          .json({ message: "reviewId and userId are required" });
+          .json({ success: false, message: "Invalid dealer ID." });
       }
 
-      const review = await Review.findOneAndDelete({
-        _id: reviewId,
-        raterId: userId,
-      });
+      const reviews = await Review.find({ dealerId })
+        .populate("raterId", "name email")
+        .populate("carId", "name")
+        .sort({ createdAt: -1 });
 
+      const avgRating = await Review.aggregate([
+        { $match: { dealerId: new mongoose.Types.ObjectId(dealerId) } },
+        { $group: { _id: "$dealerId", avgRating: { $avg: "$rating" } } },
+      ]);
+
+      return res.json({
+        success: true,
+        count: reviews.length,
+        averageRating: avgRating[0]?.avgRating || 0,
+        reviews,
+      });
+    } catch (error) {
+      console.error("Get Dealer Reviews Error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Server error fetching reviews." });
+    }
+  };
+
+  /**
+   * @route DELETE /api/reviews/:id
+   * @desc Delete a review (Admin or Owner)
+   * @access Admin / Renter
+   */
+  public deleteReview = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { requesterId, role } = req.body; // role could be 'admin' or 'user'
+
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid review ID." });
+      }
+
+      const review = await Review.findById(id);
       if (!review) {
         return res
           .status(404)
-          .json({ message: "Review not found or not authorized" });
+          .json({ success: false, message: "Review not found." });
       }
 
-      return res.status(200).json({ message: "Review deleted successfully" });
-    } catch (error: any) {
-      console.error("Error deleting review:", error);
-      return res.status(500).json({ message: "Failed to delete review" });
+      // Authorization: Admins can delete any, users only their own
+      if (role !== "admin" && review.raterId.toString() !== requesterId) {
+        return res
+          .status(403)
+          .json({ success: false, message: "Unauthorized action." });
+      }
+
+      await Review.findByIdAndDelete(id);
+
+      return res.json({
+        success: true,
+        message: "Review deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Delete Review Error:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Server error deleting review." });
     }
   };
 }

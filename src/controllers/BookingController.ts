@@ -1,47 +1,149 @@
 import { Request, Response } from "express";
 import Car from "../models/Car.js";
 import Booking from "../models/Booking.js";
+import { Coupon } from "../models/Coupon.js";
+import { UserCoupon } from "../models/UserCoupon.js";
+import mongoose from "mongoose";
 
 export default class BookingController {
   constructor() {}
 
-  //Create a booking
   public CreateBooking = async (req: Request, res: Response) => {
-    try {
-      const {
-        startDate,
-        endDate,
-        pickupLocation,
-        dropoffLocation,
-        carId,
-        renterId,
-        dealerId,
-      } = req.body;
+    const {
+      startDate,
+      endDate,
+      pickupLocation,
+      dropoffLocation,
+      carId,
+      renterId,
+      dealerId,
+      couponCode,
+    } = req.body;
 
+    try {
+      // ------------------- VALIDATION -------------------
       if (
+        !startDate ||
+        !endDate ||
         !pickupLocation ||
         !dropoffLocation ||
         !carId ||
         !renterId ||
         !dealerId
       ) {
-        return res.status(400).json({ message: "Missing required fields" });
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields.",
+        });
       }
 
-      // Calculate days & totalPrice dynamically
       const start = new Date(startDate);
       const end = new Date(endDate);
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid date format.",
+        });
+      }
+
+      if (end <= start) {
+        return res.status(400).json({
+          success: false,
+          message: "End date must be after start date.",
+        });
+      }
+
+      // ------------------- ACTIVE BOOKING CHECK -------------------
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      const activeBooking = await Booking.findOne({
+        renterId,
+        startDate: { $gte: today },
+        status: { $in: ["pending", "confirmed"] },
+      });
+
+      if (activeBooking) {
+        return res.status(409).json({
+          success: false,
+          message: "You already have a pending or confirmed booking.",
+        });
+      }
+
+      // ------------------- FETCH CAR -------------------
+      const car = await Car.findById(carId);
+      if (!car) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Car not found." });
+      }
+
+      // ------------------- PRICE CALCULATION -------------------
       const days = Math.ceil(
         (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
       );
+      const totalAmount = days * car.dailyRate;
 
-      const car = await Car.findById(carId);
-      if (!car) {
-        return res.status(404).json({ message: "Car not found" });
+      // ------------------- COUPON LOGIC -------------------
+      let discount = 0;
+      let finalAmount = totalAmount;
+      let appliedCoupon: mongoose.Types.ObjectId | null = null;
+
+      if (couponCode) {
+        const coupon = await Coupon.findOne({
+          code: couponCode.toUpperCase(),
+        });
+
+        if (!coupon)
+          return res
+            .status(404)
+            .json({ success: false, message: "Invalid coupon code." });
+
+        // Ensure user owns this coupon
+        const userCoupon = await UserCoupon.findOne({
+          userId: renterId,
+          couponId: coupon._id,
+        });
+
+        if (!userCoupon)
+          return res.status(403).json({
+            success: false,
+            message: "This coupon is not assigned to your account.",
+          });
+
+        // Check coupon validity
+        const now = new Date();
+        if (coupon.status !== "active" || now > coupon.endDate) {
+          return res.status(400).json({
+            success: false,
+            message: "Coupon expired or inactive.",
+          });
+        }
+
+        // Check minimum booking amount (if set)
+        if (coupon.minBookingAmount && totalAmount < coupon.minBookingAmount) {
+          return res.status(400).json({
+            success: false,
+            message: `Minimum booking amount must be ${coupon.minBookingAmount}.`,
+          });
+        }
+
+        // Calculate discount
+        if (coupon.discountType === "percentage") {
+          discount = (totalAmount * coupon.discountValue) / 100;
+          if (coupon.maxDiscount && discount > coupon.maxDiscount)
+            discount = coupon.maxDiscount;
+        } else if (coupon.discountType === "flat") {
+          discount = coupon.discountValue;
+        }
+
+        finalAmount = Math.max(totalAmount - discount, 0); // prevent negative
+        appliedCoupon = coupon._id;
+
+        // ------------------- UPDATE THE STATUS OF COUPON -------------------
       }
 
-      const totalPrice = days * car.dailyRate;
-
+      // ------------------- CREATE BOOKING -------------------
       const booking = await Booking.create({
         carId,
         renterId,
@@ -49,20 +151,55 @@ export default class BookingController {
         startDate: start,
         endDate: end,
         days,
-        totalPrice,
         pickupLocation,
         dropoffLocation,
+        totalPrice: totalAmount,
+        discount,
+        finalAmount,
+        couponId: appliedCoupon,
         status: "pending",
         paymentStatus: "unpaid",
       });
 
+      if (booking) {
+        const coupon = await Coupon.findOne({
+          code: couponCode.toUpperCase(),
+        });
+
+        const userCoupon = await UserCoupon.findOne({
+          userId: renterId,
+          couponId: coupon?._id,
+        });
+
+        await userCoupon?.updateOne({
+          userId: renterId,
+          couponId: coupon?._id,
+          used: true,
+        });
+      }
+
+      // ------------------- RESPONSE -------------------
       return res.status(201).json({
-        message: "Booking created successfully",
-        booking,
+        success: true,
+        message: "Booking created successfully.",
+        booking: {
+          id: booking._id,
+          car: car.name,
+          days,
+          totalAmount,
+          discount,
+          finalAmount,
+          couponApplied: couponCode || null,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+        },
       });
     } catch (error: any) {
       console.error("Booking creation error:", error);
-      return res.status(500).json({ message: "Failed to create booking" });
+      return res.status(500).json({
+        success: false,
+        message: "An unexpected error occurred while creating the booking.",
+      });
     }
   };
 
@@ -145,7 +282,6 @@ export default class BookingController {
 
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0); // start of today in UTC
-      console.log("today", today);
       const bookings = await Booking.find({
         renterId: userId,
         startDate: { $gte: today },
