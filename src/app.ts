@@ -1,26 +1,45 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
+import http from "http";
+import { Server } from "socket.io";
 import router from "./routes/index.js";
 import { corsMiddleware } from "./middleware/cors-middleware.js";
-import { Database } from "./config/db.js";
-
+import { pool } from "./config/db.js";
+import { initMessageSocket } from "./sockets/messageSocket.js";
+import path from "path";
 const app: Application = express();
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Apply CORS middleware
 app.use(corsMiddleware);
+//Serve DealersData folder as static
+app.use(
+  "/DealersData",
+  express.static(path.join(process.cwd(), "DealersData"))
+);
 
 // Routes
 app.use("/api", router);
 
-app.get("/api/health", (req: Request, res: Response) => {
-  res.json({ status: "OK", message: "API is healthy" });
+const PORT = process.env.PORT || 3000;
+
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
 
+// Initialize messaging socket
+initMessageSocket(io);
+
 // Start server after DB connection
-Database.connect().then(() => {
-  app.listen(3000, () => {
-    console.log(`Server running at http://localhost:${3000}`);
+pool.connect().then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
   });
 });

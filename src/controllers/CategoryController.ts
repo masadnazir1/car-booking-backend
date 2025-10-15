@@ -1,29 +1,44 @@
 import { Request, Response } from "express";
-import Category from "../models/Category.js";
-import Car from "../models/Car.js";
+import { CategoryModel } from "../models/categoryModel.js";
+import { CarModel } from "../models/carModel";
+import { pool } from "../config/db.js";
 
 export default class CategoryController {
   constructor() {}
 
-  //Get all categories (with optional location filter)
+  // ====================================
+  // Get All Categories (with location filter)
+  // ====================================
+
   public getAllCategories = async (req: Request, res: Response) => {
     try {
       const { location } = req.query;
-
       let categories;
 
       if (location && typeof location === "string" && location.trim()) {
-        // Find distinct categoryIds of cars in that location
-        const categoryIds = await Car.distinct("categoryId", {
-          location: { $regex: new RegExp(location, "i") }, // case-insensitive
-        });
+        // Get distinct category IDs from cars in that location (case-insensitive)
+        const carCategories = await pool.query(
+          `SELECT DISTINCT category_id FROM cars WHERE location ILIKE $1;`,
+          [`%${location.trim()}%`]
+        );
 
-        categories = await Category.find({ _id: { $in: categoryIds } }).sort({
-          name: 1,
-        });
+        const categoryIds = carCategories.rows.map((c) => c.category_id);
+
+        if (categoryIds.length === 0) {
+          return res.status(200).json({ count: 0, categories: [] });
+        }
+
+        // Fetch all categories matching those IDs
+        const result = await pool.query(
+          `SELECT * FROM categories WHERE id = ANY($1::int[]);`,
+          [categoryIds]
+        );
+        categories = result.rows;
       } else {
-        // No location filter → return all categories
-        categories = await Category.find().sort({ name: 1 });
+        const result = await pool.query(
+          `SELECT * FROM categories ORDER BY name ASC;`
+        );
+        categories = result.rows;
       }
 
       return res.status(200).json({
@@ -36,11 +51,13 @@ export default class CategoryController {
     }
   };
 
-  //Get category by ID
+  // ====================================
+  // Get Category by ID
+  // ====================================
   public getCategoryById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const category = await Category.findById(id);
+      const category = await CategoryModel.getById(Number(id));
 
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
@@ -53,7 +70,9 @@ export default class CategoryController {
     }
   };
 
-  //Add a new category
+  // ====================================
+  // Add New Category
+  // ====================================
   public addCategory = async (req: Request, res: Response) => {
     try {
       const { name, description } = req.body;
@@ -62,13 +81,18 @@ export default class CategoryController {
         return res.status(400).json({ message: "Category name is required" });
       }
 
-      // Prevent duplicates
-      const exists = await Category.findOne({ name: name.trim() });
-      if (exists) {
+      const existing = await pool.query(
+        `SELECT * FROM coupons WHERE code = $1`,
+        [name.trim()]
+      );
+
+      console.log("existing", existing.rows.length);
+
+      if (existing.rows.length > 0) {
         return res.status(409).json({ message: "Category already exists" });
       }
 
-      const category = await Category.create({
+      const category = await CategoryModel.create({
         name: name.trim(),
         description,
       });
@@ -83,25 +107,26 @@ export default class CategoryController {
     }
   };
 
-  //Update a category
+  // ====================================
+  // Update Category
+  // ====================================
   public updateCategory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const { name, description } = req.body;
 
-      const category = await Category.findByIdAndUpdate(
-        id,
-        { name, description },
-        { new: true, runValidators: true }
-      );
+      const updated = await CategoryModel.update(Number(id), {
+        name,
+        description,
+      });
 
-      if (!category) {
+      if (!updated) {
         return res.status(404).json({ message: "Category not found" });
       }
 
       return res.status(200).json({
         message: "Category updated successfully",
-        category,
+        category: updated,
       });
     } catch (error: any) {
       console.error("Error updating category:", error);
@@ -109,28 +134,32 @@ export default class CategoryController {
     }
   };
 
-  //Delete a category (with optional cascade check)
+  // ====================================
+  // Delete Category (check linked cars)
+  // ====================================
   public deleteCategory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
 
-      // Check if any cars are linked to this category
-      const linkedCars = await Car.findOne({ categoryId: id });
-      if (linkedCars) {
+      const linked = await pool.query(
+        `SELECT * FROM cars WHERE category_id = $1`,
+        [id]
+      );
+
+      if (linked.rows.length > 0) {
         return res.status(400).json({
           message: "Cannot delete category. Cars are linked to this category.",
         });
       }
 
-      const category = await Category.findByIdAndDelete(id);
+      const deleted = await CategoryModel.delete(Number(id));
 
-      if (!category) {
+      if (!deleted) {
         return res.status(404).json({ message: "Category not found" });
       }
 
       return res.status(200).json({
         message: "Category deleted successfully",
-        category,
       });
     } catch (error: any) {
       console.error("Error deleting category:", error);
@@ -138,24 +167,26 @@ export default class CategoryController {
     }
   };
 
-  //Get cars by category (extra endpoint)
+  // ====================================
+  // Get Cars by Category
+  // ====================================
   public getCarsByCategory = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
 
-      const category = await Category.findById(id);
+      const category = await CategoryModel.getById(Number(id));
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }
 
-      const cars = await Car.find({ categoryId: id }).populate(
-        "brandId",
-        "name"
+      const cars = await await pool.query(
+        `SELECT * FROM cars WHERE category_id = $1`,
+        [id]
       );
 
       return res.status(200).json({
         category: category.name,
-        totalCars: cars.length,
+        totalCars: cars.rows.length,
         cars,
       });
     } catch (error: any) {

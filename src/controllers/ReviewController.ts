@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import Review from "../models/Review.js";
-import Booking from "../models/Booking.js";
+import { reviewModel } from "../models/reviewModel.js";
+import { pool } from "../config/db.js";
 
 /**
  * Controller responsible for managing user reviews on cars/dealers.
@@ -16,40 +15,42 @@ export default class ReviewController {
    * @access User (renter)
    */
   public createReview = async (req: Request, res: Response) => {
-    const { bookingId, raterId, dealerId, carId, rating, comment } = req.body;
+    const { booking_id, rater_id, dealer_id, car_id, rating, comment } =
+      req.body;
 
     try {
-      // Validate required fields
-      if (!bookingId || !raterId || !dealerId || !carId || !rating) {
+      if (!booking_id || !rater_id || !dealer_id || !car_id || !rating) {
         return res
           .status(400)
           .json({ success: false, message: "Missing required fields." });
       }
 
-      // Validate rating range
       if (rating < 1 || rating > 5) {
-        return res.status(400).json({
-          success: false,
-          message: "Rating must be between 1 and 5.",
-        });
+        return res
+          .status(400)
+          .json({ success: false, message: "Rating must be between 1 and 5." });
       }
 
       // Validate booking ownership
-      const booking = await Booking.findById(bookingId);
+      const bookingResult = await pool.query(
+        `SELECT renter_id, status FROM bookings WHERE id = $1`,
+        [booking_id]
+      );
+
+      const booking = bookingResult.rows[0];
       if (!booking) {
         return res
           .status(404)
           .json({ success: false, message: "Booking not found." });
       }
 
-      if (booking.renterId.toString() !== raterId) {
+      if (booking.renter_id !== rater_id) {
         return res.status(403).json({
           success: false,
           message: "You are not authorized to review this booking.",
         });
       }
 
-      // Ensure the booking is completed
       if (booking.status !== "completed") {
         return res.status(400).json({
           success: false,
@@ -57,9 +58,12 @@ export default class ReviewController {
         });
       }
 
-      // Prevent duplicate reviews for same booking
-      const existingReview = await Review.findOne({ bookingId, raterId });
-      if (existingReview) {
+      // Prevent duplicate reviews for the same booking
+      const existing = await pool.query(
+        `SELECT id FROM reviews WHERE booking_id = $1 AND rater_id = $2`,
+        [booking_id, rater_id]
+      );
+      if (existing.rows.length > 0) {
         return res.status(400).json({
           success: false,
           message: "You have already reviewed this booking.",
@@ -67,13 +71,14 @@ export default class ReviewController {
       }
 
       // Create the review
-      const newReview = await Review.create({
-        bookingId,
-        raterId,
-        dealerId,
-        carId,
+      const newReview = await reviewModel.create({
+        booking_id,
+        rater_id,
+        dealer_id,
+        car_id,
         rating,
         comment,
+        id: 0,
       });
 
       return res.status(201).json({
@@ -99,32 +104,27 @@ export default class ReviewController {
     const { carId } = req.params;
 
     try {
-      if (!mongoose.Types.ObjectId.isValid(carId)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid car ID." });
-      }
+      const reviews = await reviewModel.getByCar(Number(carId));
 
-      const reviews = await Review.find({ carId })
-        .populate("raterId", "name email")
-        .sort({ createdAt: -1 });
+      const avgResult = await pool.query(
+        `SELECT AVG(rating)::numeric(10,2) AS avg_rating FROM reviews WHERE car_id = $1`,
+        [carId]
+      );
 
-      const avgRating = await Review.aggregate([
-        { $match: { carId: new mongoose.Types.ObjectId(carId) } },
-        { $group: { _id: "$carId", avgRating: { $avg: "$rating" } } },
-      ]);
+      const avgRating = avgResult.rows[0]?.avg_rating || 0;
 
       return res.json({
         success: true,
         count: reviews.length,
-        averageRating: avgRating[0]?.avgRating || 0,
+        averageRating: parseFloat(avgRating),
         reviews,
       });
     } catch (error) {
       console.error("Get Car Reviews Error:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Server error fetching reviews." });
+      return res.status(500).json({
+        success: false,
+        message: "Server error fetching reviews.",
+      });
     }
   };
 
@@ -137,33 +137,30 @@ export default class ReviewController {
     const { dealerId } = req.params;
 
     try {
-      if (!mongoose.Types.ObjectId.isValid(dealerId)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid dealer ID." });
-      }
+      const { rows: reviews } = await pool.query(
+        `SELECT * FROM reviews WHERE dealer_id = $1 ORDER BY created_at DESC`,
+        [dealerId]
+      );
 
-      const reviews = await Review.find({ dealerId })
-        .populate("raterId", "name email")
-        .populate("carId", "name")
-        .sort({ createdAt: -1 });
+      const avgResult = await pool.query(
+        `SELECT AVG(rating)::numeric(10,2) AS avg_rating FROM reviews WHERE dealer_id = $1`,
+        [dealerId]
+      );
 
-      const avgRating = await Review.aggregate([
-        { $match: { dealerId: new mongoose.Types.ObjectId(dealerId) } },
-        { $group: { _id: "$dealerId", avgRating: { $avg: "$rating" } } },
-      ]);
+      const avgRating = avgResult.rows[0]?.avg_rating || 0;
 
       return res.json({
         success: true,
         count: reviews.length,
-        averageRating: avgRating[0]?.avgRating || 0,
+        averageRating: parseFloat(avgRating),
         reviews,
       });
     } catch (error) {
       console.error("Get Dealer Reviews Error:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Server error fetching reviews." });
+      return res.status(500).json({
+        success: false,
+        message: "Server error fetching reviews.",
+      });
     }
   };
 
@@ -174,30 +171,32 @@ export default class ReviewController {
    */
   public deleteReview = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { requesterId, role } = req.body; // role could be 'admin' or 'user'
+    const { requester_id, role } = req.body; // 'admin' or 'user'
 
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid review ID." });
-      }
+      const { rows } = await pool.query(`SELECT * FROM reviews WHERE id = $1`, [
+        id,
+      ]);
+      const review = rows[0];
 
-      const review = await Review.findById(id);
       if (!review) {
         return res
           .status(404)
           .json({ success: false, message: "Review not found." });
       }
 
-      // Authorization: Admins can delete any, users only their own
-      if (role !== "admin" && review.raterId.toString() !== requesterId) {
+      if (role !== "admin" && review.rater_id !== requester_id) {
         return res
           .status(403)
           .json({ success: false, message: "Unauthorized action." });
       }
 
-      await Review.findByIdAndDelete(id);
+      const deleted = await reviewModel.delete(Number(id));
+      if (!deleted) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Failed to delete review." });
+      }
 
       return res.json({
         success: true,
@@ -205,9 +204,10 @@ export default class ReviewController {
       });
     } catch (error) {
       console.error("Delete Review Error:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Server error deleting review." });
+      return res.status(500).json({
+        success: false,
+        message: "Server error deleting review.",
+      });
     }
   };
 }
