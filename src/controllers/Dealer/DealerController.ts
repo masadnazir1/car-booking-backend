@@ -11,7 +11,7 @@ export default class DealerController {
     try {
       //check the dealer id
       if (!Dealer_id) {
-        res
+        return res
           .status(400)
           .json({ Success: false, message: "Dealer id is missing!" });
       }

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { CategoryModel } from "../models/categoryModel.js";
-import { CarModel } from "../models/carModel";
-import { pool } from "../config/db.js";
+import { CategoryModel } from "../../models/categoryModel.js";
+import { pool } from "../../config/db.js";
 
 export default class CategoryController {
   constructor() {}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { savedCarModel } from "../models/savedCarModel.js";
-import { CarModel } from "../models/carModel.js";
+import { savedCarModel } from "../../models/savedCarModel.js";
+import { CarModel } from "../../models/carModel.js";
 
 export default class SavedCarController {
   constructor() {}

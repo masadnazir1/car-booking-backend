@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BrandModel } from "../models/brandModel.js";
+import { BrandModel } from "../../models/brandModel.js";
 
 export default class BrandController {
   constructor() {}
