@@ -20,7 +20,7 @@ export default class AuthController {
   // =========================
   public registerUser = async (req: Request, res: Response) => {
     try {
-      const { fullName, email, phone, password } = req.body;
+      const { fullName, email, phone, password, role } = req.body;
 
       if (!fullName || !email || !phone || !password) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -42,7 +42,7 @@ export default class AuthController {
         email,
         phone,
         password_hash: hashedPassword,
-        role: "renter",
+        role: role,
         status: "active",
       });
 
