@@ -18,6 +18,12 @@ app.use("/Uploads", express.static(path.join(process.cwd(), "Uploads")));
 // Routes
 app.use("/api", router);
 
+app.get("/", (req, res) => {
+  res
+    .status(200)
+    .json({ success: true, message: "Welcome to car-booking backend" });
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Create HTTP server
