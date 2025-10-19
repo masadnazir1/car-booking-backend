@@ -12,11 +12,8 @@ const app: Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(corsMiddleware);
-//Serve DealersData folder as static
-app.use(
-  "/DealersData",
-  express.static(path.join(process.cwd(), "DealersData"))
-);
+//Serve  folders as static
+app.use("/Uploads", express.static(path.join(process.cwd(), "Uploads")));
 
 // Routes
 app.use("/api", router);

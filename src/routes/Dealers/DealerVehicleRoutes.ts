@@ -1,13 +1,13 @@
 import { Router } from "express";
 import vehicleController from "../../controllers/Dealer/vehicleController.js";
-import { uploadCarImages } from "../../middleware/uploadCarImages.js";
+import { uploadImages } from "../../middleware/uploadImages.js";
 const router = Router();
 const Controller = new vehicleController();
 
 router.get("/vehicle/:Dealer_id", Controller.getVehicles);
 router.post(
   "/vehicle/add",
-  uploadCarImages.array("images", 10),
+  uploadImages.array("images", 10),
   Controller.addVehicles
 );
 

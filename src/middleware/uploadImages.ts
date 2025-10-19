@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 const tempFolder = path.join(process.cwd(), "tempUploads");
 if (!fs.existsSync(tempFolder)) fs.mkdirSync(tempFolder, { recursive: true });
 
-export const uploadCarImages = multer({
+export const uploadImages = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => {
       cb(null, tempFolder); // all uploads go to temp first

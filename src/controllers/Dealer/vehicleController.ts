@@ -67,7 +67,6 @@ export default class VehicleController {
       const files = req.files as Express.Multer.File[];
       const { daily_rate } = req.body;
 
-      console.log("data", daily_rate);
       // Validate uploaded files
       if (!files || files.length === 0) {
         return res.status(400).json({ error: "No files uploaded" });
@@ -84,6 +83,7 @@ export default class VehicleController {
         `SELECT business_name FROM dealer_businesses WHERE user_id=$1`,
         [dealer_id]
       );
+
       const brandResult = await pool.query(
         `SELECT name FROM brands WHERE id=$1`,
         [brand_id]
@@ -97,10 +97,13 @@ export default class VehicleController {
       const brandName = brandResult.rows[0].name;
 
       // Define final folder
+      const uploadFoder = path.join(process.cwd(), "Uploads");
+
       const finalFolder = path.join(
-        process.cwd(),
+        uploadFoder,
         "DealersData",
         businessName,
+        "Vehicles",
         brandName
       );
       if (!fs.existsSync(finalFolder))
@@ -112,7 +115,7 @@ export default class VehicleController {
         const finalPath = path.join(finalFolder, file.filename);
         fs.renameSync(file.path, finalPath); // move file
         imageUrls.push(
-          `/DealersData/${businessName}/${brandName}/${file.filename}`
+          `/Uploads/DealersData/${businessName}/Vehicles/${brandName}/${file.filename}`
         );
       });
 
@@ -121,6 +124,8 @@ export default class VehicleController {
       if (tempFolder && fs.existsSync(tempFolder)) {
         fs.rmdirSync(tempFolder, { recursive: true });
       }
+
+      //
       const dataPayload = {
         images: imageUrls,
         dealer_id: dealer_id,
