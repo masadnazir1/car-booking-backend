@@ -8,7 +8,7 @@ import DashboardRoutes from "./User/dashboardRoutes.js";
 // import CouponRoutes from "./CouponsRoutes.js";
 import savedCarsRoutes from "./User/SavedCarRoutes.js";
 // import userCouponRoutes from "./UserCouponRoutes.js";
-// import userReviewsRoutes from "./ReviewRoutes.js";
+import userReviewsRoutes from "./User/ReviewRoutes.js";
 
 //START OF DEALER TOUTES
 import DealerRoutes from "./Dealers/DealerRoutes.js";
@@ -17,6 +17,7 @@ import DealerBookingsRoutes from "./Dealers/DealerBookingsRoutes.js";
 import DealerCustomerRoutes from "./Dealers/DealerCustomerRoutes.js";
 import messagesRoutes from "./User/messageRoutes.js";
 import DealeBusinessRoutes from "./Dealers/DealerBusinessRoutes.js";
+import DealerReviewsRoutes from "./Dealers/DealerReviewsRoutes.js";
 
 const router = Router();
 //
@@ -31,7 +32,7 @@ router.use("/categories", categoriesRoutes);
 router.use("/dashboard", DashboardRoutes);
 router.use("/saved", savedCarsRoutes);
 // router.use("/user/coupons", userCouponRoutes);
-// router.use("/user/reviews", userReviewsRoutes);
+router.use("/user/reviews", userReviewsRoutes);
 
 //START OF DEALER TOUTES
 //======================//
@@ -40,5 +41,6 @@ router.use("/dealer", DealerBookingsRoutes);
 router.use("/dealer", DealerCustomerRoutes);
 router.use("/dealer", DealerRoutes);
 router.use("/dealer", DealeBusinessRoutes);
+router.use("/dealer", DealerReviewsRoutes);
 
 export default router;
