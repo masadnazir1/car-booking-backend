@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: car_booking_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - car-booking
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    container_name: car_booking_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST: ${PG_HOST}
+      DB_PORT: ${PG_PORT}
+      DB_USER: ${PG_USER}
+      DB_PASSWORD: ${PG_PASSWORD}
+      DB_NAME: ${PG_DATABASE}
+      NODE_ENV: ${NODE_ENV}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      EMAIL_FROM: ${EMAIL_FROM}
+    networks:
+      - car-booking
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev"]
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - car-booking
+
+networks:
+  car-booking:
+
+volumes:
+  pgdata:
