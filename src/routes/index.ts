@@ -16,6 +16,7 @@ import DealerVehicleRoutes from "./Dealers/DealerVehicleRoutes.js";
 import DealerBookingsRoutes from "./Dealers/DealerBookingsRoutes.js";
 import DealerCustomerRoutes from "./Dealers/DealerCustomerRoutes.js";
 import messagesRoutes from "./User/messageRoutes.js";
+import DealeBusinessRoutes from "./Dealers/DealerBusinessRoutes.js";
 
 const router = Router();
 //
@@ -23,7 +24,7 @@ router.use("/messages", messagesRoutes);
 
 //
 router.use("/auth", AuthRoutes);
-// router.use("/bookings", BookiingRoutes);
+router.use("/bookings", BookiingRoutes);
 router.use("/cars", CarRoutes);
 router.use("/barnds", brandsRoutes);
 router.use("/categories", categoriesRoutes);
@@ -38,5 +39,6 @@ router.use("/dealer", DealerVehicleRoutes);
 router.use("/dealer", DealerBookingsRoutes);
 router.use("/dealer", DealerCustomerRoutes);
 router.use("/dealer", DealerRoutes);
+router.use("/dealer", DealeBusinessRoutes);
 
 export default router;
