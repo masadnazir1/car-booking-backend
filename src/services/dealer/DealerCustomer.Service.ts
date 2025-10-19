@@ -1,26 +1,32 @@
 import { pool } from "../../config/db.js";
 
-export const DealerCustomer = {
-  async getAll(dealer_id: number, status: string = "active") {
+export const DealerCustomerService = {
+  async add(dealer_id: number, customer_id: number) {
     const query = `
-         SELECT 
-        u.id AS customer_id,
-        u.email  AS email,
-        u.full_name AS customer_name,
-         u.phone  AS customer_phone ,
-        u.profile_image as customer_profile_image,
-        u.address as customer_address
-      
-      FROM 
-        bookings b
-      JOIN 
-        users u ON b.renter_id = u.id
-      WHERE 
-        b.dealer_id = $1
-      ORDER BY 
-        b.created_at DESC
+      INSERT INTO dealer_customers (dealer_id, customer_id)
+      VALUES ($1, $2)
+      ON CONFLICT (dealer_id, customer_id) DO NOTHING
+      RETURNING *;
     `;
+    const { rows } = await pool.query(query, [dealer_id, customer_id]);
+    return rows[0] || null;
+  },
 
+  async getAll(dealer_id: number) {
+    const query = `
+      SELECT 
+        u.id AS customer_id,
+        u.full_name AS customer_name,
+        u.email,
+        u.phone,
+        u.profile_image,
+        u.address,
+        dc.created_at AS added_at
+      FROM dealer_customers dc
+      JOIN users u ON u.id = dc.customer_id
+      WHERE dc.dealer_id = $1
+      ORDER BY dc.created_at DESC;
+    `;
     const { rows } = await pool.query(query, [dealer_id]);
     return rows;
   },
