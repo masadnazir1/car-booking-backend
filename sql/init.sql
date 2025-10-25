@@ -11,7 +11,7 @@ CREATE TABLE users (
   reset_password_token TEXT,
   reset_password_expire BIGINT,
   address JSONB,
-  status VARCHAR(20) CHECK (status IN ('active', 'suspended', 'deleted')) DEFAULT 'active',
+  status VARCHAR(20) CHECK (status IN ('active', 'suspended', 'deleted','invited')) DEFAULT 'active',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -34,6 +34,15 @@ CREATE TABLE dealer_businesses (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+--dealer_customers
+CREATE TABLE dealer_customers (
+  id SERIAL PRIMARY KEY,
+  dealer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  customer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(dealer_id, customer_id)
+);
+
 
 -- BRANDS
 CREATE TABLE brands (

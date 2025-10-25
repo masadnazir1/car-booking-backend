@@ -1,0 +1,2 @@
+"id","user_id","business_name","logo_url","website_url","description","established_year","registration_number","tax_id","address","contact_email","contact_phone","status","created_at","updated_at"
+4,6,test business_name,/Uploads/DealersData/test business_name/businessDoc/aaef595e-717b-405e-ac3b-c4ebfa526e6b.jpg,website_url.pk.test,description description description established_year,2000,"867788658654","7687586","""address address address""",contact_email@contact_email.pk,"034087786758",approved,2025-10-19 03:41:05.827,2025-10-18 23:13:01.671

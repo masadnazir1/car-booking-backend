@@ -1,0 +1,5 @@
+"id","full_name","email","phone","role","password_hash","social_login","profile_image","reset_password_token","reset_password_expire","address","status","created_at","updated_at"
+6,Dealer,masadnazir2@gmail.com,+923208648638,dealer,$2b$10$ffvWrVvJiedboNz8geXSV.LEaRw7KQ6dvET0DqooU18WdgVoBJ1WS,"",,,,"",active,2025-10-18 18:46:52.869,2025-10-18 18:46:52.869
+7,rentor,masadnazir1@gmail.com,+923208648637,renter,$2b$10$WY/aUWtAsebhbiqNRGU2e.NHxoL3LZV47Bg6ojyWdK.DXO0BeTGki,"",,,,"",active,2025-10-18 18:47:45.090,2025-10-18 18:47:45.090
+9,New added customer,masadnazir11@gmail.com,"03208648637",renter,,"",,,,"""test new cust address""",invited,2025-10-19 16:32:52.145,2025-10-19 16:32:52.145
+10,M Asad Nazir,masadnazir1666@gmail.com,"03208649638",renter,,"",,,,"""Touseef Shaheed Boys Hostel near committee chowk metro station Rawalpindi Pakistan""",invited,2025-10-19 17:06:49.864,2025-10-19 17:06:49.864

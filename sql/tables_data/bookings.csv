@@ -1,0 +1,4 @@
+"id","car_id","renter_id","dealer_id","start_date","end_date","days","total_price","discount","final_amount","coupon_id","status","payment_status","pickup_location","dropoff_location","created_at","updated_at"
+3,14,7,6,2025-08-12 05:00:00.000,2025-08-14 05:00:00.000,2,6000.00,0.00,6000.00,,pending,unpaid,rwp station,rwp station,2025-10-19 14:57:13.354,2025-10-19 14:57:13.354
+4,14,7,6,2025-08-12 05:00:00.000,2025-08-14 05:00:00.000,2,6000.00,0.00,6000.00,,completed,paid,rwp station,rwp station,2025-10-19 15:29:30.866,2025-10-19 15:29:30.866
+5,14,7,6,2025-08-12 05:00:00.000,2025-08-14 05:00:00.000,2,6000.00,0.00,6000.00,,pending,unpaid,rwp station,rwp station,2025-10-19 16:20:59.513,2025-10-19 16:20:59.513
