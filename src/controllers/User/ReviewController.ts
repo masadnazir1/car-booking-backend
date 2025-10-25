@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { reviewModel } from "../models/reviewModel.js";
-import { pool } from "../config/db.js";
+import { pool } from "../../config/db.js";
 
 /**
  * Controller responsible for managing user reviews on cars/dealers.
@@ -13,6 +12,9 @@ export default class ReviewController {
    * @route POST /api/reviews
    * @desc Submit a review for a completed booking
    * @access User (renter)
+   */
+  /**
+   * Create a new review
    */
   public createReview = async (req: Request, res: Response) => {
     const { booking_id, rater_id, dealer_id, car_id, rating, comment } =
@@ -37,14 +39,15 @@ export default class ReviewController {
         [booking_id]
       );
 
-      const booking = bookingResult.rows[0];
-      if (!booking) {
+      if (bookingResult.rowCount === 0) {
         return res
           .status(404)
           .json({ success: false, message: "Booking not found." });
       }
 
-      if (booking.renter_id !== rater_id) {
+      const booking = bookingResult.rows[0];
+
+      if (booking.renter_id !== Number(rater_id)) {
         return res.status(403).json({
           success: false,
           message: "You are not authorized to review this booking.",
@@ -63,28 +66,36 @@ export default class ReviewController {
         `SELECT id FROM reviews WHERE booking_id = $1 AND rater_id = $2`,
         [booking_id, rater_id]
       );
-      if (existing.rows.length > 0) {
+
+      if (existing?.rowCount && existing.rowCount > 0) {
         return res.status(400).json({
           success: false,
           message: "You have already reviewed this booking.",
         });
       }
 
-      // Create the review
-      const newReview = await reviewModel.create({
+      // Insert new review
+      const insertQuery = `
+        INSERT INTO reviews 
+          (booking_id, rater_id, dealer_id, car_id, rating, comment)
+        VALUES 
+          ($1, $2, $3, $4, $5, $6)
+        RETURNING *;
+      `;
+
+      const inserted = await pool.query(insertQuery, [
         booking_id,
         rater_id,
         dealer_id,
         car_id,
         rating,
-        comment,
-        id: 0,
-      });
+        comment || null,
+      ]);
 
       return res.status(201).json({
         success: true,
         message: "Review submitted successfully.",
-        data: newReview,
+        review: inserted.rows[0],
       });
     } catch (error) {
       console.error("Create Review Error:", error);
@@ -100,33 +111,6 @@ export default class ReviewController {
    * @desc Get all reviews for a specific car
    * @access Public
    */
-  public getCarReviews = async (req: Request, res: Response) => {
-    const { carId } = req.params;
-
-    try {
-      const reviews = await reviewModel.getByCar(Number(carId));
-
-      const avgResult = await pool.query(
-        `SELECT AVG(rating)::numeric(10,2) AS avg_rating FROM reviews WHERE car_id = $1`,
-        [carId]
-      );
-
-      const avgRating = avgResult.rows[0]?.avg_rating || 0;
-
-      return res.json({
-        success: true,
-        count: reviews.length,
-        averageRating: parseFloat(avgRating),
-        reviews,
-      });
-    } catch (error) {
-      console.error("Get Car Reviews Error:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Server error fetching reviews.",
-      });
-    }
-  };
 
   /**
    * @route GET /api/reviews/dealer/:dealerId
@@ -169,45 +153,4 @@ export default class ReviewController {
    * @desc Delete a review (Admin or Owner)
    * @access Admin / Renter
    */
-  public deleteReview = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { requester_id, role } = req.body; // 'admin' or 'user'
-
-    try {
-      const { rows } = await pool.query(`SELECT * FROM reviews WHERE id = $1`, [
-        id,
-      ]);
-      const review = rows[0];
-
-      if (!review) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Review not found." });
-      }
-
-      if (role !== "admin" && review.rater_id !== requester_id) {
-        return res
-          .status(403)
-          .json({ success: false, message: "Unauthorized action." });
-      }
-
-      const deleted = await reviewModel.delete(Number(id));
-      if (!deleted) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Failed to delete review." });
-      }
-
-      return res.json({
-        success: true,
-        message: "Review deleted successfully.",
-      });
-    } catch (error) {
-      console.error("Delete Review Error:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Server error deleting review.",
-      });
-    }
-  };
 }
