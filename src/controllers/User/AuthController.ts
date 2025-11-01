@@ -69,8 +69,8 @@ export default class AuthController {
         return res.status(400).json({ message: "Missing credentials" });
 
       const user = await UserModel.findByEmail(email);
-      // if (!user || user.role !== "renter")
-      //   return res.status(404).json({ message: "User not found" });
+      if (!user || user.role !== "renter")
+        return res.status(404).json({ message: "User not found" });
 
       if (!user.password_hash)
         return res
