@@ -36,6 +36,7 @@ router.use("/user/reviews", userReviewsRoutes);
 
 //START OF DEALER TOUTES
 //======================//
+// router.use("/auth", AuthRoutes);
 router.use("/dealer", DealerVehicleRoutes);
 router.use("/dealer", DealerBookingsRoutes);
 router.use("/dealer", DealerCustomerRoutes);
