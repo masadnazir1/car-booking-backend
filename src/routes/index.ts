@@ -9,6 +9,7 @@ import DashboardRoutes from "./User/dashboardRoutes.js";
 import savedCarsRoutes from "./User/SavedCarRoutes.js";
 // import userCouponRoutes from "./UserCouponRoutes.js";
 import userReviewsRoutes from "./User/ReviewRoutes.js";
+import searchCarRoutes from "./User/searchCarRoutes.js";
 
 //START OF DEALER TOUTES
 import DealerRoutes from "./Dealers/DealerRoutes.js";
@@ -33,6 +34,7 @@ router.use("/dashboard", DashboardRoutes);
 router.use("/saved", savedCarsRoutes);
 // router.use("/user/coupons", userCouponRoutes);
 router.use("/user/reviews", userReviewsRoutes);
+router.use("/user/cars", searchCarRoutes);
 
 //START OF DEALER TOUTES
 //======================//
