@@ -210,6 +210,18 @@ CREATE TABLE messages (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- contact_us
+CREATE TABLE contact_us (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(50),
+    subject VARCHAR(255),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE INDEX idx_messages_receiver ON messages(receiver_id);
 CREATE INDEX idx_messages_booking ON messages(booking_id);
 CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
