@@ -10,6 +10,7 @@ import savedCarsRoutes from "./User/SavedCarRoutes.js";
 // import userCouponRoutes from "./UserCouponRoutes.js";
 import userReviewsRoutes from "./User/ReviewRoutes.js";
 import searchCarRoutes from "./User/searchCarRoutes.js";
+import contactUsRoutes from "./User/contactUsRoutes.js";
 
 //START OF DEALER TOUTES
 import DealerRoutes from "./Dealers/DealerRoutes.js";
@@ -23,7 +24,7 @@ import DealerReviewsRoutes from "./Dealers/DealerReviewsRoutes.js";
 const router = Router();
 //
 router.use("/messages", messagesRoutes);
-
+router.use("/contact", contactUsRoutes);
 //
 router.use("/auth", AuthRoutes);
 router.use("/bookings", BookiingRoutes);
