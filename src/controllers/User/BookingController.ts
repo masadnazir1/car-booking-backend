@@ -276,6 +276,8 @@ export default class BookingController {
    */
   public cancelBooking = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    console.log("id of booking", id);
     try {
       const { rows } = await pool.query(
         `SELECT * FROM bookings WHERE id = $1`,
@@ -285,6 +287,8 @@ export default class BookingController {
 
       if (!booking)
         return res.status(404).json({ message: "Booking not found" });
+
+      console.log(booking);
 
       if (booking.status !== "pending")
         return res
