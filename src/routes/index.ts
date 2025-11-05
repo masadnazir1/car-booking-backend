@@ -40,13 +40,13 @@ router.use("/user/cars", searchCarRoutes);
 
 //START OF DEALER TOUTES
 //======================//
-// router.use("/auth", AuthRoutes);
+router.use("/auth", AuthRoutes);
 router.use("/dealer/invoice", InvoicesRoutes);
-// router.use("/dealer", DealerVehicleRoutes);
-// router.use("/dealer", DealerBookingsRoutes);
-// router.use("/dealer", DealerCustomerRoutes);
-// router.use("/dealer", DealerRoutes);
-// router.use("/dealer", DealeBusinessRoutes);
-// router.use("/dealer", DealerReviewsRoutes);
+router.use("/dealer", DealerVehicleRoutes);
+router.use("/dealer", DealerBookingsRoutes);
+router.use("/dealer", DealerCustomerRoutes);
+router.use("/dealer", DealerRoutes);
+router.use("/dealer", DealeBusinessRoutes);
+router.use("/dealer", DealerReviewsRoutes);
 
 export default router;
