@@ -9,6 +9,8 @@ import DashboardRoutes from "./User/dashboardRoutes.js";
 import savedCarsRoutes from "./User/SavedCarRoutes.js";
 // import userCouponRoutes from "./UserCouponRoutes.js";
 import userReviewsRoutes from "./User/ReviewRoutes.js";
+import searchCarRoutes from "./User/searchCarRoutes.js";
+import contactUsRoutes from "./User/contactUsRoutes.js";
 
 //START OF DEALER TOUTES
 import DealerRoutes from "./Dealers/DealerRoutes.js";
@@ -23,7 +25,7 @@ import InvoicesRoutes from "./Dealers/InvoiceRoutes.js";
 const router = Router();
 //
 router.use("/messages", messagesRoutes);
-
+router.use("/contact", contactUsRoutes);
 //
 router.use("/auth", AuthRoutes);
 router.use("/bookings", BookiingRoutes);
@@ -34,9 +36,11 @@ router.use("/dashboard", DashboardRoutes);
 router.use("/saved", savedCarsRoutes);
 // router.use("/user/coupons", userCouponRoutes);
 router.use("/user/reviews", userReviewsRoutes);
+router.use("/user/cars", searchCarRoutes);
 
 //START OF DEALER TOUTES
 //======================//
+// router.use("/auth", AuthRoutes);
 router.use("/dealer/invoice", InvoicesRoutes);
 // router.use("/dealer", DealerVehicleRoutes);
 // router.use("/dealer", DealerBookingsRoutes);

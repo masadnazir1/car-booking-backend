@@ -5,6 +5,10 @@ const router = Router();
 const Controller = new DealerBusinessController();
 
 router.get("/:dealerId", Controller.getBusinessDetails);
-router.post("/", uploadImages.array("image", 1), Controller.addBusinessDetails);
+router.post(
+  "/add-buisness-details",
+  uploadImages.array("image", 1),
+  Controller.addBusinessDetails
+);
 
 export default router;

@@ -276,6 +276,8 @@ export default class BookingController {
    */
   public cancelBooking = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    console.log("id of booking", id);
     try {
       const { rows } = await pool.query(
         `SELECT * FROM bookings WHERE id = $1`,
@@ -285,6 +287,8 @@ export default class BookingController {
 
       if (!booking)
         return res.status(404).json({ message: "Booking not found" });
+
+      console.log(booking);
 
       if (booking.status !== "pending")
         return res
@@ -319,16 +323,82 @@ export default class BookingController {
       today.setUTCHours(0, 0, 0, 0);
 
       const { rows: bookings } = await pool.query(
-        `SELECT b.*, c.name AS car_name
-         FROM bookings b
-         JOIN cars c ON b.car_id = c.id
-         WHERE b.renter_id = $1
-         AND b.start_date >= $2
-         AND b.status IN ('pending', 'confirmed')`,
+        `SELECT 
+  b.*, 
+  -- Car Info
+  json_build_object(
+    'id', c.id,
+    'name', c.name,
+    'description', c.description,
+    'images', c.images,
+    'badge', c.badge,
+    'seats', c.seats,
+    'doors', c.doors,
+    'transmission', c.transmission,
+    'fuel', c.fuel,
+    'daily_rate', c.daily_rate,
+    'status', c.status,
+    'location', c.location,
+    'ac', c.ac,
+    'year', c.year,
+    'mileage', c.mileage,
+    'created_at', c.created_at,
+    'updated_at', c.updated_at,
+    'brand', json_build_object(
+      'id', br.id,
+      'name', br.name,
+      'slug', br.slug,
+      'logo', br.logo,
+      'country', br.country,
+      'description', br.description,
+      'founded_year', br.founded_year,
+      'website', br.website
+    ),
+    'category', json_build_object(
+      'id', cate.id,
+      'name', cate.name,
+      'description', cate.description
+    ),
+    'dealer', json_build_object(
+      'id', du.id,
+      'full_name', du.full_name,
+      'email', du.email,
+      'phone', du.phone,
+      'profile_image', du.profile_image,
+      'address', du.address,
+      'business', db.business_name
+    )
+  ) AS car,
+  -- Coupon Info (if applied)
+  CASE 
+    WHEN b.coupon_id IS NOT NULL THEN json_build_object(
+      'id', co.id,
+      'code', co.code,
+      'discount_type', co.discount_type,
+      'discount_value', co.discount_value,
+      'max_discount', co.max_discount,
+      'min_booking_amount', co.min_booking_amount
+    )
+    ELSE NULL
+  END AS coupon
+FROM bookings b
+JOIN cars c ON b.car_id = c.id
+JOIN categories cate ON c.category_id = cate.id
+JOIN brands br ON c.brand_id = br.id
+JOIN users du ON b.dealer_id = du.id
+LEFT JOIN dealer_businesses db ON du.id = db.user_id
+LEFT JOIN coupons co ON b.coupon_id = co.id
+WHERE b.renter_id = $1
+  AND b.start_date >= $2
+  AND b.status IN ('pending', 'confirmed');
+`,
         [userId, today]
       );
 
-      return res.status(200).json({ bookings });
+      return res.status(200).json({
+        success: true,
+        data: bookings,
+      });
     } catch (error: any) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });

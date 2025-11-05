@@ -8,7 +8,7 @@ const Booking = new BookingController();
 router.post("/create", Booking.CreateBooking);
 router.get("/", Booking.getAllBookings);
 router.get("/:id", Booking.getSingleBooking);
-router.patch("/:id/cancel", Booking.cancelBooking);
+router.put("/:id/cancel", Booking.cancelBooking);
 router.get("/user/upcoming", Booking.getUpcomingBookings);
 router.get("/user/past", Booking.getPastBookings);
 

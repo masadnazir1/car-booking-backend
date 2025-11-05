@@ -233,6 +233,31 @@ CREATE TABLE invoices (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- INVOICES
+CREATE TABLE invoices (
+  id SERIAL PRIMARY KEY,
+  booking_id INT NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+  dealer_generating INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  generated_for INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invoice_number VARCHAR(20) UNIQUE NOT NULL,
+  issue_date TIMESTAMP DEFAULT NOW(),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- contact_us
+CREATE TABLE contact_us (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(50),
+    subject VARCHAR(255),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE INDEX idx_messages_receiver ON messages(receiver_id);
 CREATE INDEX idx_messages_booking ON messages(booking_id);
 CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
