@@ -131,6 +131,7 @@ CREATE TABLE bookings (
   payment_status VARCHAR(20) CHECK (payment_status IN ('unpaid', 'paid', 'refunded')) DEFAULT 'unpaid',
   pickup_location TEXT NOT NULL,
   dropoff_location TEXT NOT NULL,
+  isInvoiceGenerated BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -217,6 +218,19 @@ CREATE TABLE messages (
     attachment_url TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- INVOICES
+CREATE TABLE invoices (
+  id SERIAL PRIMARY KEY,
+  booking_id INT NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+  dealer_generating INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  generated_for INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invoice_number VARCHAR(20) UNIQUE NOT NULL,
+  issue_date TIMESTAMP DEFAULT NOW(),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE INDEX idx_messages_receiver ON messages(receiver_id);

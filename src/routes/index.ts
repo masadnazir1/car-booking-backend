@@ -18,6 +18,7 @@ import DealerCustomerRoutes from "./Dealers/DealerCustomerRoutes.js";
 import messagesRoutes from "./User/messageRoutes.js";
 import DealeBusinessRoutes from "./Dealers/DealerBusinessRoutes.js";
 import DealerReviewsRoutes from "./Dealers/DealerReviewsRoutes.js";
+import InvoicesRoutes from "./Dealers/InvoiceRoutes.js";
 
 const router = Router();
 //
@@ -36,11 +37,12 @@ router.use("/user/reviews", userReviewsRoutes);
 
 //START OF DEALER TOUTES
 //======================//
-router.use("/dealer", DealerVehicleRoutes);
-router.use("/dealer", DealerBookingsRoutes);
-router.use("/dealer", DealerCustomerRoutes);
-router.use("/dealer", DealerRoutes);
-router.use("/dealer", DealeBusinessRoutes);
-router.use("/dealer", DealerReviewsRoutes);
+router.use("/dealer/invoice", InvoicesRoutes);
+// router.use("/dealer", DealerVehicleRoutes);
+// router.use("/dealer", DealerBookingsRoutes);
+// router.use("/dealer", DealerCustomerRoutes);
+// router.use("/dealer", DealerRoutes);
+// router.use("/dealer", DealeBusinessRoutes);
+// router.use("/dealer", DealerReviewsRoutes);
 
 export default router;

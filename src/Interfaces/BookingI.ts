@@ -10,6 +10,7 @@ export interface Booking {
   discount?: number;
   final_amount: number;
   coupon_id?: string | null;
+  isInvoiceGenerated?: Boolean;
   status?: "pending" | "confirmed" | "cancelled" | "completed";
   payment_status?: "unpaid" | "paid" | "refunded";
   pickup_location: string;

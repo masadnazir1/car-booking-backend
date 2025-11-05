@@ -1,108 +1,32 @@
--- ===============================================
--- SEED DATA FOR CAR BOOKING SYSTEM
--- ===============================================
-
--- 1. USERS
-INSERT INTO users (full_name, email, phone, role, password_hash, status)
+-- Seeds Brands
+INSERT INTO public.brands
+(id, "name", slug, logo, country, description, founded_year, website, created_at, updated_at)
 VALUES
-('Ali Khan', 'ali@example.com', '03001112222', 'renter', 'hashed_password_1', 'active'),
-('Sara Ahmed', 'sara@example.com', '03003334444', 'dealer', 'hashed_password_2', 'active'),
-('Bilal Iqbal', 'bilal@example.com', '03005556666', 'dealer', 'hashed_password_3', 'active');
+(1, 'Toyota', 'toyota', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_logo.png', 'Japan', 'Renowned for reliability and innovation in automotive manufacturing.', 1937, 'https://www.toyota.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(2, 'Honda', 'honda', 'https://upload.wikimedia.org/wikipedia/commons/7/79/Honda_logo.svg', 'Japan', 'Manufacturer of automobiles, motorcycles, and power equipment.', 1948, 'https://www.honda.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(3, 'BMW', 'bmw', 'https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg', 'Germany', 'Luxury vehicle brand known for performance and precision engineering.', 1916, 'https://www.bmw.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(4, 'Mercedes-Benz', 'mercedes-benz', 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg', 'Germany', 'Luxury automotive brand focused on innovation, comfort, and design.', 1926, 'https://www.mercedes-benz.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(5, 'Ford', 'ford', 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Ford_logo_flat.svg', 'USA', 'One of the oldest automobile manufacturers in the world, known for mass production.', 1903, 'https://www.ford.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(6, 'Hyundai', 'hyundai', 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Hyundai_logo.svg', 'South Korea', 'Global automotive manufacturer offering affordable and efficient vehicles.', 1967, 'https://www.hyundai.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(7, 'Kia', 'kia', 'https://upload.wikimedia.org/wikipedia/commons/e/ee/Kia_logo.svg', 'South Korea', 'Manufacturer of stylish and affordable vehicles with strong market growth.', 1944, 'https://www.kia.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(8, 'Nissan', 'nissan', 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Nissan_2020_logo.svg', 'Japan', 'Innovative car manufacturer with a wide range of vehicles and EV technology.', 1933, 'https://www.nissan-global.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(9, 'Audi', 'audi', 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Audi_logo_detail.svg', 'Germany', 'Luxury car brand recognized for technology, design, and performance.', 1909, 'https://www.audi.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286'),
+(10, 'Chevrolet', 'chevrolet', 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Chevrolet_logo.svg', 'USA', 'American automobile brand offering a wide variety of cars and trucks.', 1911, 'https://www.chevrolet.com', '2025-10-19 02:36:35.286', '2025-10-19 02:36:35.286');
 
--- 2. DEALER BUSINESSES
-INSERT INTO dealer_businesses (user_id, business_name, logo_url, description, established_year, registration_number, tax_id, status)
-VALUES
-(2, 'Prime Motors', 'https://example.com/logo1.png', 'Luxury car dealer', 2015, 'REG-1001', 'TAX-2001', 'approved'),
-(3, 'City Drive Rentals', 'https://example.com/logo2.png', 'Affordable rentals for everyone', 2018, 'REG-1002', 'TAX-2002', 'approved'),
-(3, 'AutoHub', 'https://example.com/logo3.png', 'New and used cars dealership', 2016, 'REG-1003', 'TAX-2003', 'pending');
 
--- 3. DEALER CUSTOMERS
-INSERT INTO dealer_customers (dealer_id, customer_id)
-VALUES
-(2, 1),
-(3, 1),
-(3, 2);
+-- Categories
 
--- 4. BRANDS
-INSERT INTO brands (name, slug, country, founded_year, website)
-VALUES
-('Toyota', 'toyota', 'Japan', 1937, 'https://www.toyota.com'),
-('Honda', 'honda', 'Japan', 1948, 'https://www.honda.com'),
-('BMW', 'bmw', 'Germany', 1916, 'https://www.bmw.com');
 
--- 5. CATEGORIES
-INSERT INTO categories (name, description)
+INSERT INTO public.categories
+(id, "name", description, created_at, updated_at)
 VALUES
-('SUV', 'Sport Utility Vehicles'),
-('Sedan', 'Comfortable city cars'),
-('Hatchback', 'Compact and efficient');
-
--- 6. CARS
-INSERT INTO cars (dealer_id, brand_id, category_id, name, description, images, badge, seats, doors, transmission, fuel, daily_rate, location, ac, year, mileage)
-VALUES
-(2, 1, 1, 'Toyota Fortuner', 'Spacious SUV with 7 seats', ARRAY['https://example.com/fortuner1.jpg'], 'Premium', 7, 5, 'Automatic', 'Diesel', 150.00, 'Islamabad', TRUE, 2021, 30000),
-(3, 2, 2, 'Honda Civic', 'Comfortable sedan with sleek design', ARRAY['https://example.com/civic1.jpg'], 'Sport', 5, 4, 'Manual', 'Petrol', 100.00, 'Lahore', TRUE, 2020, 25000),
-(3, 3, 3, 'BMW X3', 'Luxury compact SUV', ARRAY['https://example.com/bmw-x3.jpg'], 'Luxury', 5, 4, 'Automatic', 'Petrol', 300.00, 'Karachi', TRUE, 2022, 10000);
-
--- 7. COUPONS
-INSERT INTO coupons (code, discount_type, discount_value, start_date, end_date, created_by)
-VALUES
-('SAVE10', 'percentage', 10.00, NOW(), NOW() + INTERVAL '30 days', 2),
-('FLAT500', 'flat', 500.00, NOW(), NOW() + INTERVAL '15 days', 3),
-('DEAL20', 'percentage', 20.00, NOW(), NOW() + INTERVAL '10 days', 3);
-
--- 8. BOOKINGS
-INSERT INTO bookings (car_id, renter_id, dealer_id, start_date, end_date, days, total_price, discount, final_amount, coupon_id, status, payment_status, pickup_location, dropoff_location)
-VALUES
-(1, 1, 2, NOW(), NOW() + INTERVAL '2 days', 2, 300.00, 30.00, 270.00, 1, 'confirmed', 'paid', 'Islamabad', 'Lahore'),
-(2, 1, 3, NOW(), NOW() + INTERVAL '3 days', 3, 300.00, 0.00, 300.00, NULL, 'pending', 'unpaid', 'Lahore', 'Karachi'),
-(3, 1, 3, NOW(), NOW() + INTERVAL '1 day', 1, 300.00, 60.00, 240.00, 3, 'completed', 'paid', 'Karachi', 'Karachi');
-
--- 9. FAQS
-INSERT INTO faqs (title, description, role)
-VALUES
-('How to book a car?', 'Simply select your preferred car and booking dates.', 'renter'),
-('How to list my cars?', 'Register as a dealer and add your business details.', 'dealer'),
-('Payment options?', 'We support card and PayPal for now.', 'renter');
-
--- 10. NOTIFICATIONS
-INSERT INTO notifications (user_id, type, message)
-VALUES
-(1, 'booking_update', 'Your booking has been confirmed.'),
-(2, 'payment', 'Payment received for booking #1.'),
-(3, 'reminder', 'Car maintenance reminder.');
-
--- 11. PAYMENTS
-INSERT INTO payments (booking_id, payer_id, receiver_id, amount, payment_method, payment_status, transaction_id, commission)
-VALUES
-(1, 1, 2, 270.00, 'card', 'paid', 'TXN001', 27.00),
-(2, 1, 3, 300.00, 'paypal', 'pending', 'TXN002', 30.00),
-(3, 1, 3, 240.00, 'stripe', 'paid', 'TXN003', 24.00);
-
--- 12. REVIEWS
-INSERT INTO reviews (booking_id, rater_id, dealer_id, car_id, rating, comment)
-VALUES
-(1, 1, 2, 1, 5, 'Excellent car and smooth process.'),
-(2, 1, 3, 2, 4, 'Good experience, minor issues.'),
-(3, 1, 3, 3, 5, 'Perfect!');
-
--- 13. SAVED CARS
-INSERT INTO saved_cars (user_id, car_id)
-VALUES
-(1, 1),
-(1, 2),
-(1, 3);
-
--- 14. USER COUPONS
-INSERT INTO user_coupons (user_id, coupon_id, assigned_by, used)
-VALUES
-(1, 1, 2, TRUE),
-(1, 2, 3, FALSE),
-(2, 3, 3, FALSE);
-
--- 15. MESSAGES
-INSERT INTO messages (booking_id, sender_id, receiver_id, message)
-VALUES
-(1, 1, 2, 'Hi, I have confirmed the booking.'),
-(1, 2, 1, 'Thanks, the car will be ready tomorrow.'),
-(3, 3, 1, 'Hope you enjoyed your trip!');
+(1, 'Sedan', 'Passenger cars with a three-box configuration offering comfort and fuel efficiency.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(2, 'SUV', 'Sport Utility Vehicles designed for versatility, off-road capability, and spacious interiors.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(3, 'Hatchback', 'Compact cars with a rear door that swings upward, providing convenient cargo access.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(4, 'Coupe', 'Two-door sporty cars focused on performance and sleek design.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(5, 'Convertible', 'Cars with retractable roofs, allowing open-air driving experiences.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(6, 'Pickup Truck', 'Vehicles with open cargo areas designed for hauling and towing.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(7, 'Van', 'Large vehicles ideal for transporting people or goods with ample storage capacity.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(8, 'Crossover', 'Cars combining SUV features with a unibody platform for better comfort and fuel economy.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(9, 'Electric', 'Vehicles powered entirely by electric motors and rechargeable batteries.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540'),
+(10, 'Hybrid', 'Cars combining internal combustion engines with electric propulsion for improved efficiency.', '2025-10-19 02:37:07.540', '2025-10-19 02:37:07.540');
