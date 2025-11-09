@@ -1,5 +1,9 @@
 # Node modules
 node_modules/
+#
+#Uploads
+/Uploads
+Uploads
 
 # Logs
 logs/
