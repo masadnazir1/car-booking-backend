@@ -1,5 +1,6 @@
-import { pool } from "../config/db";
+import { pool } from "../config/db.js";
 import { Booking } from "../Interfaces/BookingI";
+import { BookingDetail } from "../Interfaces/IBookingDetail.js";
 
 export const BookingModel = {
   // ===============================
@@ -59,6 +60,63 @@ export const BookingModel = {
     const query = `SELECT * FROM bookings WHERE id = $1;`;
     const { rows } = await pool.query(query, [id]);
     return rows[0] || null;
+  },
+
+  // ===============================
+  // Get Booking by ID
+  // ===============================
+  async getBookingDetails(booking_id: number): Promise<Booking | null> {
+    const Query = `SELECT bk.*, c.*, db.*, u.*
+FROM bookings bk
+JOIN cars c ON bk.car_id = c.id
+LEFT JOIN dealer_businesses db ON bk.dealer_id = db.user_id
+JOIN users u ON bk.dealer_id = u.id
+WHERE bk.id = $1
+LIMIT 1;
+`;
+    const { rows } = await pool.query(Query, [booking_id]);
+
+    console.log(rows);
+
+    if (!rows[0]) return null; // <-- prevent undefined access
+
+    const details: any = {
+      bookingId: rows[0].id,
+      bookingDate: rows[0].created_at,
+      status: rows[0].status,
+      paymentStatus: rows[0].payment_status,
+      totalAmount: rows[0].final_amount,
+      car: {
+        name: rows[0].name,
+        make: rows[0].year,
+        vehicleType: "car",
+        bodyType: rows[0].bodyType,
+        fuel: rows[0].fuel,
+        transmission: rows[0].transmission,
+        ac: rows[0].ac,
+        seats: rows[0].seats,
+        doors: rows[0].doors,
+        year: rows[0].year,
+        mileage: rows[0].mileage,
+        images: rows[0].images,
+        dailyRate: rows[0].daily_rate,
+      },
+      rentalPeriod: {
+        pickupDate: rows[0].start_date,
+        returnDate: rows[0].end_date,
+        pickupLocation: rows[0].pickup_location,
+        returnLocation: rows[0].dropoff_location,
+      },
+      dealer: {
+        name: rows[0].business_name,
+
+        phone: rows[0].contact_phone,
+        email: rows[0].email,
+        address: rows[0].address,
+      },
+    };
+
+    return details || null;
   },
 
   // ===============================

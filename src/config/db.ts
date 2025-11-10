@@ -15,6 +15,10 @@ export const pool = new Pool({
 pool
   .connect()
   .then(() =>
-    console.log("PostgreSQL connected successfully", process.env.PG_DATABASE)
+    console.log(
+      "PostgreSQL connected successfully",
+      process.env.PG_DATABASE,
+      process.env.PG_HOST
+    )
   )
   .catch((err) => console.error("Database connection failed:", err));

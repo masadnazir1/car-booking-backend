@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { pool } from "../../config/db.js";
+import { BookingModel } from "../../models/bookingModel.js";
 
 export default class BookingController {
   constructor() {}
@@ -238,6 +239,39 @@ export default class BookingController {
         return res.status(404).json({ message: "No bookings found" });
 
       return res.status(200).json({ bookings });
+    } catch (error: any) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  };
+
+  public getBookingDetails = async (req: Request, res: Response) => {
+    const { booking_id } = req.params;
+    try {
+      const id: number = Number(booking_id);
+      //
+      //
+
+      const response: any = await BookingModel.getBookingDetails(id);
+
+      if (!response) {
+        return res.status(404).json({
+          success: false,
+          statusCode: 404,
+          message: "Booking not found",
+        });
+      }
+
+      // console.log("response", response);
+      if (response) {
+        //
+        return res.status(200).json({
+          success: true,
+          statusCode: 200,
+          message: "Booking details fetched successfully",
+          data: response,
+        });
+      }
     } catch (error: any) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
