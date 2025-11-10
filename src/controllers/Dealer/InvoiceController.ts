@@ -29,7 +29,7 @@ class DealerInvoice {
     } catch (error: any) {
       console.error("Error in generateInvoice:", error);
       res.status(500).json({
-        isExecutionSuccess: true,
+        isExecutionSuccess: false,
         success: false,
         statusCode: 500,
         message: error.message || "Internal Server Error",
