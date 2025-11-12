@@ -256,25 +256,30 @@ export default class BookingController {
 
       if (!response) {
         return res.status(404).json({
+          isExecutionSuccess: true,
           success: false,
           statusCode: 404,
           message: "Booking not found",
+          data: null,
         });
       }
 
-      // console.log("response", response);
-      if (response) {
-        //
-        return res.status(200).json({
-          success: true,
-          statusCode: 200,
-          message: "Booking details fetched successfully",
-          data: response,
-        });
-      }
+      return res.status(200).json({
+        isExecutionSuccess: true,
+        success: true,
+        statusCode: 200,
+        message: "Booking details fetched successfully",
+        data: response,
+      });
     } catch (error: any) {
       console.error(error);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({
+        isExecutionSuccess: true,
+        success: false,
+        statusCode: 404,
+        message: error.message,
+        data: null,
+      });
     }
   };
 

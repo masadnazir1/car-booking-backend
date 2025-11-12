@@ -67,13 +67,13 @@ export const BookingModel = {
   // ===============================
   async getBookingDetails(booking_id: number): Promise<Booking | null> {
     const Query = `SELECT bk.*, c.*, db.*, u.*
-FROM bookings bk
-JOIN cars c ON bk.car_id = c.id
-LEFT JOIN dealer_businesses db ON bk.dealer_id = db.user_id
-JOIN users u ON bk.dealer_id = u.id
-WHERE bk.id = $1
-LIMIT 1;
-`;
+        FROM bookings bk
+        JOIN cars c ON bk.car_id = c.id
+        LEFT JOIN dealer_businesses db ON bk.dealer_id = db.user_id
+        JOIN users u ON bk.dealer_id = u.id
+        WHERE bk.id = $1
+        LIMIT 1
+    `;
     const { rows } = await pool.query(Query, [booking_id]);
 
     console.log(rows);
