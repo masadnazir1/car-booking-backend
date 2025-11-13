@@ -24,7 +24,6 @@ export default class CarController {
     } = req.query;
 
     //
-    console.log("HOST", req.hostname, req.socket.localPort);
 
     let baseUrl = "";
     //get the base url for maping the pictures
@@ -62,6 +61,7 @@ export default class CarController {
       const parsedPage = Math.max(Number(page) || 1, 1);
       const parsedLimit = Math.min(Math.max(Number(limit) || 10, 1), 100);
       const offset = (parsedPage - 1) * parsedLimit;
+      console.log("Car page ", offset);
 
       const { rows: cars, count: totalCars } = await CarModel.getAll(
         filters,

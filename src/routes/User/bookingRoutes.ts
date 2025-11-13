@@ -7,6 +7,7 @@ const Booking = new BookingController();
 // User side routes
 router.post("/create", Booking.CreateBooking);
 router.get("/", Booking.getAllBookings);
+router.get("/user/booking-details/:booking_id", Booking.getBookingDetails);
 router.get("/:id", Booking.getSingleBooking);
 router.put("/:id/cancel", Booking.cancelBooking);
 router.get("/user/upcoming", Booking.getUpcomingBookings);

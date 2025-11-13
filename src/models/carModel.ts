@@ -63,6 +63,7 @@ export const CarModel = {
     const conditions: string[] = [];
     const values: any[] = [];
 
+    console.log("location", location);
     let idx = 1;
 
     // Filters
@@ -88,8 +89,8 @@ export const CarModel = {
 
     // Location search (ILIKE)
     if (location) {
-      conditions.push(`location ILIKE $${idx++}`);
-      values.push(`%${location}%`);
+      conditions.push(`location = $${idx++}`);
+      values.push(`${location}`);
     }
 
     const whereClause = conditions.length

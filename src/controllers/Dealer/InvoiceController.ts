@@ -42,6 +42,7 @@ class DealerInvoice {
     try {
       const { booking_id } = req.params;
 
+      console.log("booking_id", booking_id);
       if (!booking_id) {
         return res.status(400).json({
           isExecutionSuccess: true,
