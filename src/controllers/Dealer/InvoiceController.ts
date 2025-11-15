@@ -10,9 +10,9 @@ class DealerInvoice {
   constructor() {}
 
   generateInvoice = async (req: Request, res: Response) => {
-    try {
-      const { booking_id } = req.body;
+    const { booking_id } = req?.body;
 
+    try {
       if (!booking_id) {
         return res
           .status(400)
@@ -23,8 +23,16 @@ class DealerInvoice {
           );
       }
 
-      const invoice = await InvoiceServ.generateInvoice(booking_id);
+      const [invoice, error] = await InvoiceServ.generateInvoice(booking_id);
 
+      if (!invoice)
+        return res
+          .status(404)
+          .json(
+            new API_RES(true, 404, error, null, [
+              `${error} with id ${booking_id}`,
+            ])
+          );
       res
         .status(201)
         .json(
@@ -50,16 +58,12 @@ class DealerInvoice {
             ])
           );
 
-      const invoice = await InvoiceServ.getInvoice(Number(booking_id));
+      const [invoice, error] = await InvoiceServ.getInvoice(Number(booking_id));
 
       if (!invoice) {
         return res
           .status(404)
-          .json(
-            new API_RES(true, 404, "Invoice Not Found", null, [
-              "Invoice not found",
-            ])
-          );
+          .json(new API_RES(true, 404, error, null, ["Invoice not found"]));
       }
 
       res
@@ -71,7 +75,9 @@ class DealerInvoice {
       console.error("Error in getInvoice:", error);
       res
         .status(500)
-        .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
+        .json(
+          new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR], error)
+        );
     }
   };
 }

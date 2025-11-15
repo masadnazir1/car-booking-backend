@@ -46,7 +46,6 @@ export default class DealerBusinessController {
    * addBusinessDetails
    */
   public async addBusinessDetails(req: Request, res: Response) {
-    console.log("Invoked add bus details");
     const {
       dealerId,
       business_name,

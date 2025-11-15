@@ -56,3 +56,6 @@ yarn.lock
 # Misc
 *.tgz
 .idea/
+
+tempUploads/*
+Uploads/DealersData/*
