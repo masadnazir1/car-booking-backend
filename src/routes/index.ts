@@ -42,11 +42,11 @@ router.use("/user/cars", searchCarRoutes);
 //======================//
 router.use("/auth", AuthRoutes);
 router.use("/dealer/invoice", InvoicesRoutes);
-router.use("/dealer", DealerVehicleRoutes);
-router.use("/dealer", DealerBookingsRoutes);
-router.use("/dealer", DealerCustomerRoutes);
-router.use("/dealer", DealerRoutes);
+router.use("/dealer/vehicle", DealerVehicleRoutes);
+router.use("/dealer/bookings", DealerBookingsRoutes);
+router.use("/dealer/customers", DealerCustomerRoutes);
+router.use("/dealer/dashboard", DealerRoutes);
+router.use("/dealer/reviews", DealerReviewsRoutes);
 router.use("/dealer", DealeBusinessRoutes);
-router.use("/dealer", DealerReviewsRoutes);
 
 export default router;

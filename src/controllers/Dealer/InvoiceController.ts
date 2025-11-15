@@ -1,88 +1,79 @@
 import { Request, Response } from "express";
 import { InvoiceServ } from "../../services/dealer/invoiceService.js";
+import API_RES from "../../utils/resHandlers.ts/ApiRes.js";
+import CONSTANTS from "../../constants/consts.js";
 
 class DealerInvoice {
+  ERR_MSG = CONSTANTS.API_ERRORS.INTERNAL_SERVER_MSG;
+  SERVER_ERR = CONSTANTS.API_ERRORS.INTERNAL_SERVER_ERR;
+
   constructor() {}
 
-  async generateInvoice(req: Request, res: Response) {
+  generateInvoice = async (req: Request, res: Response) => {
     try {
       const { booking_id } = req.body;
 
       if (!booking_id) {
-        return res.status(400).json({
-          isExecutionSuccess: true,
-          success: false,
-          statusCode: 400,
-          message: "Booking Id missing",
-        });
+        return res
+          .status(400)
+          .json(
+            new API_RES(true, 400, "Required fields missing", null, [
+              "Booking Id missing",
+            ])
+          );
       }
 
       const invoice = await InvoiceServ.generateInvoice(booking_id);
 
-      res.status(200).json({
-        isExecutionSuccess: true,
-        success: true,
-        statusCode: 200,
-        message: "Invoice created successfully",
-        data: invoice,
-      });
+      res
+        .status(201)
+        .json(
+          new API_RES(true, 201, "Invoice created successfully", invoice, [])
+        );
     } catch (error: any) {
       console.error("Error in generateInvoice:", error);
-      res.status(500).json({
-        isExecutionSuccess: false,
-        success: false,
-        statusCode: 500,
-        message: error.message || "Internal Server Error",
-        data: null,
-      });
+      res
+        .status(500)
+        .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
     }
-  }
+  };
 
-  async getInvoice(req: Request, res: Response) {
+  getInvoice = async (req: Request, res: Response) => {
+    const { booking_id } = req.params;
     try {
-      const { booking_id } = req.params;
-
-      console.log("booking_id", booking_id);
-      if (!booking_id) {
-        return res.status(400).json({
-          isExecutionSuccess: true,
-          success: false,
-          statusCode: 400,
-          message: "Booking ID missing",
-          data: null,
-        });
-      }
+      if (!booking_id)
+        return res
+          .status(400)
+          .json(
+            new API_RES(true, 400, "Required fields missing", null, [
+              "Booking Id missing",
+            ])
+          );
 
       const invoice = await InvoiceServ.getInvoice(Number(booking_id));
 
       if (!invoice) {
-        return res.status(404).json({
-          isExecutionSuccess: true,
-          success: false,
-          statusCode: 404,
-          message: "Invoice not found",
-          data: null,
-        });
+        return res
+          .status(404)
+          .json(
+            new API_RES(true, 404, "Invoice Not Found", null, [
+              "Invoice not found",
+            ])
+          );
       }
 
-      res.status(200).json({
-        isExecutionSuccess: true,
-        success: true,
-        statusCode: 200,
-        message: "Invoice retrieved successfully",
-        data: invoice,
-      });
+      res
+        .status(201)
+        .json(
+          new API_RES(true, 201, "Invoice retrieved successfully", invoice, [])
+        );
     } catch (error: any) {
       console.error("Error in getInvoice:", error);
-      res.status(500).json({
-        isExecutionSuccess: false,
-        success: false,
-        statusCode: 500,
-        message: error.message || "Internal Server Error",
-        data: null,
-      });
+      res
+        .status(500)
+        .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
     }
-  }
+  };
 }
 
 export default DealerInvoice;

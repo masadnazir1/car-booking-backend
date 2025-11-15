@@ -7,8 +7,8 @@ export class DealerCustomerController {
 
   // Get all customers linked with a dealer
   async getAllCustomers(req: Request, res: Response) {
+    const { dealer_id } = req.params;
     try {
-      const { dealer_id } = req.params;
       const recentBookings = await DealerCustomerService.getAll(
         Number(dealer_id)
       );
@@ -28,9 +28,9 @@ export class DealerCustomerController {
 
   // Dealer adds new customer (even if customer has no account)
   async addCustomer(req: Request, res: Response) {
-    try {
-      const { dealerId, full_name, email, phone, address } = req.body;
+    const { dealerId, full_name, email, phone, address } = req.body;
 
+    try {
       if (!dealerId || !email || !full_name) {
         return res.status(400).json({
           success: false,

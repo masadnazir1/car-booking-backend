@@ -7,8 +7,8 @@ export class DealerBookingsController {
   //methos wil goes beloow here
 
   async getRecentBookings(req: Request, res: Response) {
+    const { dealer_id } = req.params;
     try {
-      const { dealer_id } = req.params;
       console.log(typeof dealer_id);
       const recentBookings = await DealerBookings.getAll(Number(dealer_id));
 
@@ -26,10 +26,9 @@ export class DealerBookingsController {
   }
 
   async getBookingsStatus(req: Request, res: Response) {
+    const { dealer_id } = req.params;
+    const { status } = req.query;
     try {
-      const { dealer_id } = req.params;
-      const { status } = req.query;
-
       console.log(dealer_id, status);
       if (!dealer_id || !status) {
         return res.status(400).json({

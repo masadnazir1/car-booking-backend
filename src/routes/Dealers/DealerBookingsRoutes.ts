@@ -4,7 +4,7 @@ import { DealerBookingsController } from "../../controllers/Dealer/DealerBooking
 const router = Router();
 const Controller = new DealerBookingsController();
 
-router.get("/bookings/:dealer_id", Controller.getRecentBookings);
-router.get("/bookings/status/:dealer_id", Controller.getBookingsStatus);
+router.get("/:dealer_id", Controller.getRecentBookings);
+router.get("/status/:dealer_id", Controller.getBookingsStatus);
 
 export default router;
