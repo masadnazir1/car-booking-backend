@@ -8,8 +8,8 @@ export class DealerReviewsController {
    * Get all reviews for a dealer
    */
   public async getReviews(req: Request, res: Response): Promise<void> {
+    const { dealerId } = req.params;
     try {
-      const { dealerId } = req.params;
       console.log("dealerId", dealerId);
 
       if (!dealerId) {

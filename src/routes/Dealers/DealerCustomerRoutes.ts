@@ -4,7 +4,7 @@ import { DealerCustomerController } from "../../controllers/Dealer/DealerCustome
 const router = Router();
 const Controller = new DealerCustomerController();
 
-router.get("/customers/:dealer_id", Controller.getAllCustomers);
-router.post("/customers/", Controller.addCustomer);
+router.get("/:dealer_id", Controller.getAllCustomers);
+router.post("/", Controller.addCustomer);
 
 export default router;

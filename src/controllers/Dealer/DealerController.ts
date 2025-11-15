@@ -41,8 +41,8 @@ export default class DealerController {
   //endpoint to get the recent bookings
 
   async getRecentBookings(req: Request, res: Response) {
+    const { dealer_id } = req.params;
     try {
-      const { dealer_id } = req.params;
       const recentBookings = await dealerdashboard.RecentBookings(
         Number(dealer_id)
       );

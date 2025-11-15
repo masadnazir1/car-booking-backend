@@ -233,19 +233,6 @@ CREATE TABLE invoices (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- INVOICES
-CREATE TABLE invoices (
-  id SERIAL PRIMARY KEY,
-  booking_id INT NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
-  dealer_generating INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  generated_for INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  invoice_number VARCHAR(20) UNIQUE NOT NULL,
-  issue_date TIMESTAMP DEFAULT NOW(),
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
 -- contact_us
 CREATE TABLE contact_us (
     id SERIAL PRIMARY KEY,

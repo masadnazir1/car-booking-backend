@@ -46,6 +46,7 @@ export default class DealerBusinessController {
    * addBusinessDetails
    */
   public async addBusinessDetails(req: Request, res: Response) {
+    console.log("Invoked add bus details");
     const {
       dealerId,
       business_name,
@@ -89,13 +90,15 @@ export default class DealerBusinessController {
       //define the doc
       let LogoUrl: any = null;
 
-      files.forEach((file) => {
-        const finalPath = path.join(finalFolder, file.filename);
+      if (files && files.length > 0) {
+        files.forEach((file) => {
+          const finalPath = path.join(finalFolder, file.filename);
 
-        fs.renameSync(file.path, finalPath); // move the file
+          fs.renameSync(file.path, finalPath); // move the file
 
-        LogoUrl = `/Uploads/DealersData/${businessName}/businessDoc/${file.filename}`;
-      });
+          LogoUrl = `/Uploads/DealersData/${businessName}/businessDoc/${file.filename}`;
+        });
+      }
 
       const response = await BusinessDetailsSservice.insertBusiness({
         user_id: dealerId,
