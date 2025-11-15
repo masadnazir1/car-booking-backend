@@ -13,14 +13,16 @@ import searchCarRoutes from "./User/searchCarRoutes.js";
 import contactUsRoutes from "./User/contactUsRoutes.js";
 
 //START OF DEALER TOUTES
-import DealerRoutes from "./Dealers/DealerRoutes.js";
-import DealerVehicleRoutes from "./Dealers/DealerVehicleRoutes.js";
-import DealerBookingsRoutes from "./Dealers/DealerBookingsRoutes.js";
-import DealerCustomerRoutes from "./Dealers/DealerCustomerRoutes.js";
+import DealerRoutes from "./Dealers/Dealer.Routes.js";
+import DealerVehicleRoutes from "./Dealers/DealerVehicle.Routes.js";
+import DealerBookingsRoutes from "./Dealers/DealerBookings.Routes.js";
+import DealerCustomerRoutes from "./Dealers/DealerCustomer.Routes.js";
 import messagesRoutes from "./User/messageRoutes.js";
-import DealeBusinessRoutes from "./Dealers/DealerBusinessRoutes.js";
-import DealerReviewsRoutes from "./Dealers/DealerReviewsRoutes.js";
-import InvoicesRoutes from "./Dealers/InvoiceRoutes.js";
+import DealeBusinessRoutes from "./Dealers/DealerBusiness.Routes.js";
+import DealerReviewsRoutes from "./Dealers/DealerReviews.Routes.js";
+import InvoicesRoutes from "./Dealers/Invoice.Routes.js";
+import BrandsRoutes from "./Dealers/brands.routes.js";
+import CategoriesRoutes from "./Dealers/categories.routes.js";
 
 const router = Router();
 //
@@ -47,6 +49,8 @@ router.use("/dealer/bookings", DealerBookingsRoutes);
 router.use("/dealer/customers", DealerCustomerRoutes);
 router.use("/dealer/dashboard", DealerRoutes);
 router.use("/dealer/reviews", DealerReviewsRoutes);
+router.use("/dealer/brands", BrandsRoutes);
+router.use("/dealer/categories", CategoriesRoutes);
 router.use("/dealer", DealeBusinessRoutes);
 
 export default router;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dealerdashboard } from "../../services/dealer/dashboardService.js";
+import { dealerdashboard } from "../../services/dealer/dashboard.Service.js";
 
 export default class DealerController {
   constructor() {}

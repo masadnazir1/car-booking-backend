@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { vehicleService } from "../../services/dealer/vehicleService.js";
+import { vehicleService } from "../../services/dealer/vehicle.Service.js";
 import { pool } from "../../config/db.js";
 import fs from "fs";
 import path from "path";

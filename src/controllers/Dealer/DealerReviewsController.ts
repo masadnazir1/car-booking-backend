@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DealerReviewsService } from "../../services/dealer/DealerReviewsService.js";
+import { DealerReviewsService } from "../../services/dealer/DealerReviews.Service.js";
 
 export class DealerReviewsController {
   constructor() {}

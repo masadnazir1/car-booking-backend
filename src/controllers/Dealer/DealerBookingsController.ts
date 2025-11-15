@@ -1,4 +1,4 @@
-import { DealerBookings } from "../../services/dealer/dealerBookingService.js";
+import { DealerBookings } from "../../services/dealer/dealerBooking.Service.js";
 import { Request, Response } from "express";
 
 export class DealerBookingsController {

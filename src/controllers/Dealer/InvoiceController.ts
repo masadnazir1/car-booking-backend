@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { InvoiceServ } from "../../services/dealer/invoiceService.js";
+import { InvoiceServ } from "../../services/dealer/invoice.Service.js";
 import API_RES from "../../utils/resHandlers.ts/ApiRes.js";
 import CONSTANTS from "../../constants/consts.js";
 
@@ -51,6 +51,7 @@ class DealerInvoice {
           );
 
       const invoice = await InvoiceServ.getInvoice(Number(booking_id));
+      console.log("invoice invoice", invoice);
 
       if (!invoice) {
         return res
