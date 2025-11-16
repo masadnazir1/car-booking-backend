@@ -7,7 +7,7 @@ const allowedOrigins = [
   "http://localhost:43505", //  current frontend port
   "http://127.0.0.1:43505",
   "https://tapride.galaxydev.pk",
-  "http://dealer-tapride.galaxydev.pk",
+  "https://dealer-tapride.galaxydev.pk",
 ];
 
 export function corsMiddleware(
