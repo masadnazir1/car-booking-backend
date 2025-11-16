@@ -1,11 +1,12 @@
 import express, { Application } from "express";
 import http from "http";
-import { Server } from "socket.io";
-import router from "./routes/index.js";
-import { corsMiddleware } from "./middleware/cors-middleware.js";
-import { pool } from "./config/db.js";
-import { initMessageSocket } from "./sockets/messageSocket.js";
 import path from "path";
+import { Server } from "socket.io";
+import { pool } from "./config/db.js";
+import { corsMiddleware } from "./middleware/cors-middleware.js";
+import router from "./routes/index.js";
+import { runSetup } from "./setup/index.js";
+import { initMessageSocket } from "./sockets/messageSocket.js";
 const app: Application = express();
 
 // Middlewares
@@ -25,6 +26,13 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
+// Only run setup if a specific ENV is set, e.g., first deployment
+if (process.env.RUN_SETUP === "true") {
+  runSetup()
+    .then(() => console.log("Initial setup finished"))
+    .catch((err) => console.error("Setup failed:", err));
+}
 
 // Create HTTP server
 const server = http.createServer(app);
