@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 const allowedOrigins = [
   "http://localhost:3000", // Backend dev server
   "http://localhost:3001", // Backend dev server
   "http://localhost:4200", // Angular dev server
-  "http://localhost:43505", // Your current frontend port
+  "http://localhost:43505", //  current frontend port
   "http://127.0.0.1:43505",
   "https://tapride.galaxydev.pk",
+  "http://dealer-tapride.galaxydev.pk",
 ];
 
 export function corsMiddleware(
