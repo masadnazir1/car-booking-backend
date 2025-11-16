@@ -1,14 +1,14 @@
 // src/controllers/auth.controller.ts
-import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { Request, Response } from "express";
+import jwt, { SignOptions } from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
-import { UserModel } from "../../models/userModel.js";
 import { pool } from "../../config/db.js";
-import { JWT_SECRET, JWT_EXPIRES_IN } from "../../config/jwt.js";
+import { JWT_EXPIRES_IN, JWT_SECRET } from "../../config/jwt.js";
+import { UserModel } from "../../models/userModel.js";
 
 dotenv.config();
 
@@ -70,7 +70,6 @@ export default class AuthController {
 
       const user = await UserModel.findByEmail(email);
 
-      console.log("this is the user", user);
       if (!user) return res.status(404).json({ message: "User not found" });
 
       if (!user.password_hash)

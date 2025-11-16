@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { vehicleService } from "../../services/dealer/vehicle.Service.js";
-import { pool } from "../../config/db.js";
 import fs from "fs";
 import path from "path";
+import { pool } from "../../config/db.js";
+import { vehicleService } from "../../services/dealer/vehicle.Service.js";
 
 //
 //
@@ -24,7 +24,7 @@ export default class VehicleController {
       if (response.length > 0) {
         res.status(200).json({
           muccess: true,
-          message: "Date feteched successfully",
+          message: "Data feteched successfully",
           data: response,
         });
       } else {

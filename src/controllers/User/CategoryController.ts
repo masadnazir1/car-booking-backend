@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CategoryModel } from "../../models/categoryModel.js";
 import { pool } from "../../config/db.js";
+import { CategoryModel } from "../../models/categoryModel.js";
 
 export default class CategoryController {
   constructor() {}
@@ -84,8 +84,6 @@ export default class CategoryController {
         `SELECT * FROM coupons WHERE code = $1`,
         [name.trim()]
       );
-
-      console.log("existing", existing.rows.length);
 
       if (existing.rows.length > 0) {
         return res.status(409).json({ message: "Category already exists" });

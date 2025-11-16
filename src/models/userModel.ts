@@ -28,7 +28,6 @@ export const UserModel = {
 
   //  Find user by email
   async findByEmail(email: string) {
-    console.log("EMAIL", email);
     const { rows } = await pool.query(
       "SELECT * FROM public.users WHERE email = $1",
       [email]

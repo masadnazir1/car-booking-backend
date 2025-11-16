@@ -1,5 +1,5 @@
 import { Router } from "express";
-import vehicleController from "../../controllers/Dealer/vehicleController.js";
+import vehicleController from "../../controllers/Dealer/vehicle.Controller.js";
 import { uploadImages } from "../../middleware/uploadImages.js";
 const router = Router();
 const Controller = new vehicleController();

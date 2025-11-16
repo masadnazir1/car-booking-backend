@@ -1,6 +1,5 @@
 import { pool } from "../config/db.js";
 import { Booking } from "../Interfaces/BookingI";
-import { BookingDetail } from "../Interfaces/IBookingDetail.js";
 
 export const BookingModel = {
   // ===============================
@@ -144,8 +143,6 @@ export const BookingModel = {
       LIMIT 1
     `;
     const { rows } = await pool.query(Query, [booking_id]);
-
-    console.log(rows);
 
     if (!rows[0]) return null;
 

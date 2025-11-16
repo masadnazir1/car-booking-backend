@@ -2,12 +2,22 @@ import { pool } from "../../config/db.js";
 import { insertVehicleQuery } from "../../queries/insertVehicleQuery.js";
 
 export const vehicleService = {
+  //
+  //
   async getAllVehicles(Dealer_id: number) {
+    const BASE_URL = process.env.BASE_URL;
     const res = await pool.query(`SELECT * FROM cars WHERE dealer_id =$1`, [
       Dealer_id,
     ]);
-    console.log("Dealer_id", res.rows);
-    return res.rows;
+
+    const vehicles = res.rows.map((row) => {
+      if (Array.isArray(row.images)) {
+        row.images = row.images.map((img: string) => BASE_URL + img);
+      }
+      return row;
+    });
+
+    return vehicles;
   },
 
   //Method to add a car

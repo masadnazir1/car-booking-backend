@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import CONSTANTS from "../../constants/consts.js";
 import { InvoiceServ } from "../../services/dealer/invoice.Service.js";
 import API_RES from "../../utils/resHandlers.ts/ApiRes.js";
-import CONSTANTS from "../../constants/consts.js";
 
 class DealerInvoice {
   ERR_MSG = CONSTANTS.API_ERRORS.INTERNAL_SERVER_MSG;
@@ -51,7 +51,6 @@ class DealerInvoice {
           );
 
       const invoice = await InvoiceServ.getInvoice(Number(booking_id));
-      console.log("invoice invoice", invoice);
 
       if (!invoice) {
         return res

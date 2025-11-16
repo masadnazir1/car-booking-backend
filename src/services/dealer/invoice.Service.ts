@@ -49,7 +49,6 @@ export const InvoiceServ = {
           "UPDATE bookings SET isInvoiceGenerated = true WHERE id = $1",
           [booking.id]
         );
-        console.log("Updated bookings table");
         const invoiceDetails = await this.getInvoice(booking_id);
         return invoiceDetails;
       }

@@ -135,7 +135,6 @@ export const dealerdashboard = {
     );
 
     //return the response to the controller
-    console.log("monthComparison", monthComparison.rows);
 
     return {
       totalCars: totalCars.rows.length,

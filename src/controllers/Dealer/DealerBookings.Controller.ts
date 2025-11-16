@@ -13,7 +13,6 @@ export class DealerBookingsController {
   async getRecentBookings(req: Request, res: Response) {
     const { dealer_id } = req.params;
     try {
-      console.log(typeof dealer_id);
       const recentBookings = await DealerBookings.getAll(Number(dealer_id));
 
       return res.json({
@@ -33,7 +32,6 @@ export class DealerBookingsController {
     const { dealer_id } = req.params;
     const { status } = req.query;
     try {
-      console.log(dealer_id, status);
       if (!dealer_id || !status) {
         return res.status(400).json({
           success: false,

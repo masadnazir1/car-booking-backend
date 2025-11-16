@@ -1,6 +1,6 @@
 import { Router } from "express";
+import DealerInvoice from "../../controllers/Dealer/Invoice.Controller.js";
 const router = Router();
-import DealerInvoice from "../../controllers/Dealer/InvoiceController.js";
 
 const invoice = new DealerInvoice();
 

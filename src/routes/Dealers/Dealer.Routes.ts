@@ -1,5 +1,5 @@
 import { Router } from "express";
-import DealerController from "../../controllers/Dealer/DealerController.js";
+import DealerController from "../../controllers/Dealer/Dealer.Controller.js";
 
 const router = Router();
 const Controller = new DealerController();

@@ -10,8 +10,6 @@ export class DealerReviewsController {
   public async getReviews(req: Request, res: Response): Promise<void> {
     const { dealerId } = req.params;
     try {
-      console.log("dealerId", dealerId);
-
       if (!dealerId) {
         res.status(400).json({ success: false, message: "Dealer ID required" });
         return;
