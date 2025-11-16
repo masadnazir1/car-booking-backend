@@ -1,5 +1,5 @@
-import { seedBrands } from "./seedBrands";
-import { seedCategories } from "./seedCategories";
+import { seedBrands } from "./seedBrands.js";
+import { seedCategories } from "./seedCategories.js";
 
 export async function runSetup() {
   console.log("Starting initial setup...");
