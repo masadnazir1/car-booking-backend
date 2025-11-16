@@ -178,6 +178,25 @@ export default class BookingController {
         ]
       );
 
+      const checkDealerCustomer = await pool.query(
+        "SELECT * FROM dealer_customers dc WHERE dc.customer_id = $1 AND dc.dealer_id = $2",
+        [renterId, dealerId]
+      );
+      //add the customer to the dealer if not already
+      if (checkDealerCustomer.rows?.length === 0) {
+        pool.query(
+          "INSERT INTO dealer_customers (dealer_id,customer_id) values ($1,$2)",
+          [dealerId, renterId]
+        );
+      }
+
+      //set the car status to unavailable
+      const updateCarStatus = await pool.query(
+        "UPDATE cars SET status = 'unavailable' WHERE id = $1",
+        [carId]
+      );
+
+      console.log("updateCarStatus", updateCarStatus);
       const booking = insertBooking.rows[0];
 
       // Mark coupon as used

@@ -147,4 +147,26 @@ export const DealerBookings = {
       },
     };
   },
+  async updateABooking(
+    booking_id: number,
+    booking_status: string,
+    payment_status: string
+  ) {
+    const checkBooking = await pool.query(
+      "SELECT id FROM bookings WHERE id = $1",
+      [booking_id]
+    );
+    if (!checkBooking.rows[0]) return;
+
+    const response = await pool.query(
+      `UPDATE bookings
+     SET status = $1,
+         payment_status = $2
+     WHERE id = $3
+     RETURNING *`,
+      [booking_status, payment_status, booking_id]
+    );
+
+    return response.rows;
+  },
 };

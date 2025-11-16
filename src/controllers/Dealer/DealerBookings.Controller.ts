@@ -96,5 +96,51 @@ export class DealerBookingsController {
         .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
     }
   }
+  async updateBookings(req: Request, res: Response) {
+    const { booking_id } = req.params;
+    const { booking_status, payment_status } = req.body;
+
+    try {
+      if (!booking_id) {
+        return res.status(400).json({
+          success: false,
+          message: "booking_id is required fileds",
+        });
+      }
+
+      const updateBooking: any = await DealerBookings.updateABooking(
+        Number(booking_id),
+        booking_status,
+        payment_status
+      );
+
+      if (!updateBooking || updateBooking.length === 0) {
+        return res.json(
+          new API_RES(
+            true,
+            404,
+            "No booking details found for this id",
+            updateBooking,
+            []
+          )
+        );
+      }
+
+      return res.json(
+        new API_RES(
+          true,
+          200,
+          "Booking updated successfully",
+          updateBooking,
+          []
+        )
+      );
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      return res
+        .status(500)
+        .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
+    }
+  }
 }
 export { DealerBookings };
