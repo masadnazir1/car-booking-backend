@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { pool } from "../../config/db.js";
 import { BusinessDetailsSservice } from "../../services/dealer/BusinessDetails.service.js";
 //
 export default class DealerBusinessController {
@@ -67,13 +66,7 @@ export default class DealerBusinessController {
           .json({ success: true, message: "dealerId is required" });
       }
 
-      // Fetch dealer and brand names from DB
-      const dealerResult = await pool.query(
-        `SELECT business_name FROM dealer_businesses WHERE user_id=$1`,
-        [dealerId]
-      );
-
-      const businessName = dealerResult.rows[0].business_name;
+      const businessName = business_name;
 
       // Define final folder
       const uploadFoder = path.join(process.cwd(), "Uploads");

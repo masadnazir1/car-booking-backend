@@ -29,6 +29,11 @@ export default class AuthController {
       // Check if user exists by email or phone using UserModel
       const existingByEmail = await UserModel.findByEmail(email);
       const existingByPhone = await UserModel.findByPhone(phone);
+      console.log(
+        "existingByEmail existingByPhone",
+        existingByEmail,
+        existingByPhone
+      );
       if (existingByEmail || existingByPhone) {
         return res
           .status(400)
