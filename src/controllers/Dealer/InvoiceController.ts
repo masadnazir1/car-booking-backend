@@ -13,6 +13,7 @@ class DealerInvoice {
     const { booking_id } = req?.body;
 
     try {
+      throw new Error("Asad ke wajha sy ye error aya ha");
       if (!booking_id) {
         return res
           .status(400)
@@ -39,10 +40,19 @@ class DealerInvoice {
           new API_RES(true, 201, "Invoice created successfully", invoice, [])
         );
     } catch (error: any) {
-      console.error("Error in generateInvoice:", error);
       res
         .status(500)
-        .json(new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR]));
+        .json(
+          new API_RES(
+            false,
+            500,
+            this.ERR_MSG,
+            null,
+            [this.SERVER_ERR],
+            error,
+            req
+          )
+        );
     }
   };
 
@@ -72,11 +82,18 @@ class DealerInvoice {
           new API_RES(true, 201, "Invoice retrieved successfully", invoice, [])
         );
     } catch (error: any) {
-      console.error("Error in getInvoice:", error);
       res
         .status(500)
         .json(
-          new API_RES(false, 500, this.ERR_MSG, null, [this.SERVER_ERR], error)
+          new API_RES(
+            false,
+            500,
+            this.ERR_MSG,
+            null,
+            [this.SERVER_ERR],
+            error,
+            req
+          )
         );
     }
   };

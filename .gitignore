@@ -59,3 +59,4 @@ yarn.lock
 
 tempUploads/*
 Uploads/DealersData/*
+logs/*
