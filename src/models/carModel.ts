@@ -10,7 +10,6 @@ export const CarModel = {
   ): Promise<Car> {
     //
     //
-    console.log("data ADD", data);
     //
     //
     const query = `
@@ -63,7 +62,6 @@ export const CarModel = {
     const conditions: string[] = [];
     const values: any[] = [];
 
-    console.log("location", location);
     let idx = 1;
 
     // Filters
