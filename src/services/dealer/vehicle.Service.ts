@@ -68,4 +68,75 @@ export const vehicleService = {
       businessName: dealerRes.rows[0].business_name,
     };
   },
+
+  //update a car fields by dealer id and car id
+  async updateCarByIdDealer(
+    dealerId: number,
+    carId: number,
+    description: string,
+    fuel: string,
+    ac: boolean,
+    year: number,
+    mileage: number,
+    status: string,
+    badge: string,
+    daily_rate: number
+  ) {
+    const isCarExist = await pool.query(`SELECT name FROM cars WHERE id = $1`, [
+      carId,
+    ]);
+
+    console.log(
+      "type of data",
+      typeof description,
+      typeof fuel,
+      typeof ac,
+      typeof year,
+      typeof mileage,
+      typeof status,
+      typeof badge,
+      typeof daily_rate
+    );
+
+    //update the car
+    const updateRes = await pool.query(
+      `UPDATE cars
+SET 
+  description = $1,
+  fuel = $2,
+  ac = $3,
+  year = $4,
+  mileage = $5,
+  status = $6,
+  badge = $7,
+  daily_rate = $8,
+  updated_at = NOW()
+WHERE 
+  id = $9
+  AND dealer_id = $10
+returning *
+ 
+      `,
+      [
+        description,
+        fuel,
+        ac,
+        year,
+        mileage,
+        status,
+        badge,
+        daily_rate,
+        carId,
+        dealerId,
+      ]
+    );
+
+    if (!isCarExist.rows.length) {
+      throw new Error("Invalid carId or dealerId");
+    }
+
+    return {
+      updateRes: updateRes.rows[0],
+    };
+  },
 };

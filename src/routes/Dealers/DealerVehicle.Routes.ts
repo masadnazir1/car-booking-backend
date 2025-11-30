@@ -5,6 +5,7 @@ const router = Router();
 const Controller = new vehicleController();
 
 router.get("/:Dealer_id", Controller.getVehicles);
+router.patch("/:dealerId/:carId", Controller.updateSingleVehicle);
 router.post("/add", uploadImages.array("images", 10), Controller.addVehicles);
 
 export default router;

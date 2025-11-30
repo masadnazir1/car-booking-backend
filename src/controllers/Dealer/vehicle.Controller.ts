@@ -2,11 +2,16 @@ import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { pool } from "../../config/db.js";
+import CONSTANTS from "../../constants/consts.js";
 import { vehicleService } from "../../services/dealer/vehicle.Service.js";
+import API_RES from "../../utils/resHandlers.ts/ApiRes.js";
 
 //
 //
 export default class VehicleController {
+  ERR_MSG = CONSTANTS.API_ERRORS.INTERNAL_SERVER_MSG;
+  SERVER_ERR = CONSTANTS.API_ERRORS.INTERNAL_SERVER_ERR;
+
   constructor() {}
 
   public getVehicles = async (req: Request, res: Response) => {
@@ -37,6 +42,53 @@ export default class VehicleController {
       res
         .status(500)
         .json({ Success: false, message: "Something went wrong!", error });
+    }
+  };
+
+  //uupdate a car
+  public updateSingleVehicle = async (req: Request, res: Response) => {
+    const { dealerId, carId } = req.params;
+    const { description, fuel, ac, year, mileage, status, badge, daily_rate } =
+      req.body;
+
+    try {
+      if (!dealerId) {
+        return res
+          .status(400)
+          .json({ Success: false, message: "Dealer id is missing!" });
+      }
+
+      //proccess the req
+      const response: any = await vehicleService.updateCarByIdDealer(
+        Number(dealerId),
+        Number(carId),
+        description,
+        fuel,
+        ac,
+        Number(year),
+        Number(mileage),
+        status,
+        badge,
+        Number(daily_rate)
+      );
+
+      return res
+        .status(200)
+        .json(new API_RES(true, 200, "updated the record", response, []));
+    } catch (error: any) {
+      return res
+        .status(500)
+        .json(
+          new API_RES(
+            false,
+            500,
+            this.ERR_MSG,
+            null,
+            [this.SERVER_ERR],
+            error,
+            req
+          )
+        );
     }
   };
 
