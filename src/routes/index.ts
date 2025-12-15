@@ -40,7 +40,7 @@ router.use("/saved", savedCarsRoutes);
 router.use("/user/reviews", userReviewsRoutes);
 router.use("/user/cars", searchCarRoutes);
 
-//START OF DEALER TOUTES
+//START OF DEALER ROUTES
 //======================//
 router.use("/auth", AuthRoutes);
 router.use("/dealer/invoice", InvoicesRoutes);

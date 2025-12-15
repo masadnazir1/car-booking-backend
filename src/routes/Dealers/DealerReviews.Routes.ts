@@ -4,6 +4,7 @@ import { DealerReviewsController } from "../../controllers/Dealer/DealerReviews.
 const router = Router();
 const Controller = new DealerReviewsController();
 
+router.get("/review/:reviewId", Controller.getSingleReview);
 router.get("/:dealerId", Controller.getReviews);
 
 export default router;

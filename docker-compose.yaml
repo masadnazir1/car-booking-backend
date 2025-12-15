@@ -13,7 +13,7 @@ services:
     networks:
       - car-booking
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   backend:
     build: .
